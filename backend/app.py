@@ -118,21 +118,21 @@ def Recruitersignup():
     if db.companies.find_one({"company_name": company_name}):
         return jsonify({"success": False, "message": "Company already exists"}), 409
 
-    if 'logo' in files:
-        logo_file = files['logo']
-        if logo_file:
-            logo_filename = f"uploads/logos/{generate_uuid()}_{logo_file.filename}"
-            os.makedirs(os.path.dirname(logo_filename), exist_ok=True) 
-            logo_file.save(logo_filename)  
+    # if 'logo' in files:
+    #     logo_file = files['logo']
+    #     if logo_file:
+    #         logo_filename = f"uploads/logos/{generate_uuid()}_{logo_file.filename}"
+    #         os.makedirs(os.path.dirname(logo_filename), exist_ok=True) 
+    #         logo_file.save(logo_filename)  
 
-    else:
-        return jsonify({"success": False, "message": "Logo file is required"}), 400
+    # else:
+    #     return jsonify({"success": False, "message": "Logo file is required"}), 400
 
     new_company = {
         "id": generate_uuid(),
         "company_name": company_name,
         "password": password,
-        "logo": logo_filename, 
+        "logo": "", 
         "description": data.get("description", ""),
         "website": data.get("website", ""),
         "industry": data.get("industry", ""),
@@ -256,7 +256,13 @@ def manage_institute(institute_id):
 @app.route('/company-details', methods=['GET', 'PUT'])
 def company_details():
     if request.method == 'GET':
-        companies = list(db.companies.find({}, {"_id": 0, "password": 0}))
+        data = request.json
+        company_id = data["company_id"]
+
+        if not company_id:
+            return jsonify({"error": "Missing company_id in headers"}), 400
+        
+        companies = list(db.companies.find({"company_id": company_id}, {"_id": 0, "password": 0}))
         return jsonify(companies), 200
     
     elif request.method == 'PUT':
@@ -429,7 +435,13 @@ def job_applications():
 @app.route('/recruitment-rounds', methods=['GET', 'POST','PUT'])
 def recruitment_rounds():
     if request.method == 'GET':
-        rounds = list(db.recruitment_rounds.find({}, {"_id": 0}))
+        data = request.json
+        company_id = data.get("company_id")
+        
+        if not company_id:
+            return jsonify({"error": "Missing company_id in headers"}), 400
+        
+        rounds = list(db.recruitment_rounds.find({"company_id": company_id}, {"_id": 0}))
         return jsonify(rounds), 200
     elif request.method == 'POST':
         data = request.json
