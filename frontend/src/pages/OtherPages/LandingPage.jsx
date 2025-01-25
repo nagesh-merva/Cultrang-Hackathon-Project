@@ -38,7 +38,7 @@ const LandingPage = () => {
             </p>
             <a
               onClick={() => navigate("/recruiters/auth")}
-              className=" inline-flex items-center px-8 py-2 mt-4 text-lg font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+              className="cursor-pointer inline-flex items-center px-8 py-2 mt-4 text-lg font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-colors"
             >
               Get Started
             </a>

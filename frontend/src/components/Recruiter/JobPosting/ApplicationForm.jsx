@@ -1,19 +1,19 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { FaPlusCircle, FaMinusCircle } from 'react-icons/fa';
+import React, { useState, useRef, useEffect } from "react";
+import { FaPlusCircle, FaMinusCircle } from "react-icons/fa";
 
 export default function JobForm({ onSubmit }) {
-  const [title, setTitle] = useState('');
-  const [company, setCompany] = useState('');
-  const [location, setLocation] = useState('');
-  const [description, setDescription] = useState('');
-  const [requirements, setRequirements] = useState(['']);
+  const [title, setTitle] = useState("");
+  const [company, setCompany] = useState("");
+  const [location, setLocation] = useState("");
+  const [description, setDescription] = useState("");
+  const [requirements, setRequirements] = useState([""]);
   const [applicationFields, setApplicationFields] = useState([
-    { id: '1', label: '', type: 'text', required: true },
+    { id: "1", label: "", type: "text", required: true },
   ]);
   const [colleges, setColleges] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [deadline, setDeadline] = useState(''); // New state for deadline
-  const [jobType, setJobType] = useState(''); // New state for job type
+  const [deadline, setDeadline] = useState(""); // New state for deadline
+  const [jobType, setJobType] = useState(""); // New state for job type
   const dropdownRef = useRef(null);
 
   const handleSubmit = (e) => {
@@ -23,14 +23,14 @@ export default function JobForm({ onSubmit }) {
       company,
       location,
       description,
-      requirements: requirements.filter((req) => req.trim() !== ''),
+      requirements: requirements.filter((req) => req.trim() !== ""),
       applicationFields: applicationFields.filter(
-        (field) => field.label.trim() !== ''
+        (field) => field.label.trim() !== ""
       ),
       colleges,
       deadline, // Add deadline
       jobType, // Add jobType
-      status: 'open',
+      status: "open",
     });
   };
 
@@ -49,8 +49,8 @@ export default function JobForm({ onSubmit }) {
         setShowDropdown(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -58,9 +58,14 @@ export default function JobForm({ onSubmit }) {
       onSubmit={handleSubmit}
       className="space-y-8 max-w-4xl mx-auto bg-white p-10 rounded-lg shadow-lg border border-gray-200 my-4"
     >
+      <h1 className="text-2xl font-bold flex justify-center text-gray-900">
+        Create Job Posting
+      </h1>
       {/* Company */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Company</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Company
+        </label>
         <input
           type="text"
           value={company}
@@ -72,7 +77,9 @@ export default function JobForm({ onSubmit }) {
 
       {/* Job Title */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Job Title</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Job Title
+        </label>
         <input
           type="text"
           value={title}
@@ -84,7 +91,9 @@ export default function JobForm({ onSubmit }) {
 
       {/* Job Type */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Job Type</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Job Type
+        </label>
         <select
           value={jobType}
           onChange={(e) => setJobType(e.target.value)}
@@ -99,7 +108,9 @@ export default function JobForm({ onSubmit }) {
 
       {/* Location */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Location</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Location
+        </label>
         <input
           type="text"
           value={location}
@@ -111,7 +122,9 @@ export default function JobForm({ onSubmit }) {
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Description</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Description
+        </label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -123,7 +136,9 @@ export default function JobForm({ onSubmit }) {
 
       {/* Requirements */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Requirements</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Requirements
+        </label>
         {requirements.map((req, index) => (
           <div key={index} className="flex mt-2 items-center space-x-2">
             <input
@@ -147,7 +162,7 @@ export default function JobForm({ onSubmit }) {
         ))}
         <button
           type="button"
-          onClick={() => setRequirements([...requirements, ''])}
+          onClick={() => setRequirements([...requirements, ""])}
           className="mt-2 flex items-center text-blue-600"
         >
           <FaPlusCircle size={20} className="mr-1" /> Add Requirement
@@ -156,7 +171,9 @@ export default function JobForm({ onSubmit }) {
 
       {/* Application Fields */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Application Fields</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Application Fields
+        </label>
         {applicationFields.map((field, index) => (
           <div key={field.id} className="flex mt-2 items-center space-x-2">
             <input
@@ -186,7 +203,11 @@ export default function JobForm({ onSubmit }) {
             </select>
             <button
               type="button"
-              onClick={() => setApplicationFields(applicationFields.filter((_, i) => i !== index))}
+              onClick={() =>
+                setApplicationFields(
+                  applicationFields.filter((_, i) => i !== index)
+                )
+              }
               className="text-red-600"
             >
               <FaMinusCircle size={20} />
@@ -198,7 +219,12 @@ export default function JobForm({ onSubmit }) {
           onClick={() =>
             setApplicationFields([
               ...applicationFields,
-              { id: Date.now().toString(), label: '', type: 'text', required: true },
+              {
+                id: Date.now().toString(),
+                label: "",
+                type: "text",
+                required: true,
+              },
             ])
           }
           className="mt-2 flex items-center text-blue-600"
@@ -209,7 +235,9 @@ export default function JobForm({ onSubmit }) {
 
       {/* Colleges */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">College</label>
+        <label className="block text-sm font-medium text-gray-700">
+          College
+        </label>
         <div className="relative" ref={dropdownRef}>
           <button
             type="button"
@@ -217,14 +245,14 @@ export default function JobForm({ onSubmit }) {
             className="w-full mt-2 bg-white border border-gray-300 rounded-md shadow-sm p-2 text-left focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             {colleges.length > 0
-              ? `Selected: ${colleges.join(', ')}`
-              : 'Select Colleges'}
+              ? `Selected: ${colleges.join(", ")}`
+              : "Select Colleges"}
           </button>
 
           {showDropdown && (
             <div className="absolute z-10 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg p-4">
               <div className="space-y-2">
-                {['GEC', 'IIT', 'NIT', 'PCCE'].map((college) => (
+                {["GEC", "IIT", "NIT", "PCCE"].map((college) => (
                   <div key={college} className="flex items-center">
                     <input
                       type="checkbox"
@@ -233,7 +261,10 @@ export default function JobForm({ onSubmit }) {
                       onChange={() => toggleCollegeSelection(college)}
                       className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
-                    <label htmlFor={college} className="ml-2 text-sm text-gray-700">
+                    <label
+                      htmlFor={college}
+                      className="ml-2 text-sm text-gray-700"
+                    >
                       {college}
                     </label>
                   </div>
@@ -253,7 +284,9 @@ export default function JobForm({ onSubmit }) {
 
       {/* Deadline */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Deadline</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Deadline
+        </label>
         <input
           type="date"
           value={deadline}
