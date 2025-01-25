@@ -1,6 +1,7 @@
 // Auth.jsx
 import React, { useState } from 'react';
 import Login from '../../components/CollegeAdmin/Auth/Login';
+import SignUp from '../../components/CollegeAdmin/Auth/Signup';
 
 const Auth = () => {
   const [isSignUpView, setIsSignUpView] = useState(false);
@@ -13,8 +14,7 @@ const Auth = () => {
     <div>
       {/* Conditionally render Login component based on isSignUpView */}
       {!isSignUpView && <Login toggleAuthView={toggleAuthView} />}
-      {/* Add your Sign Up component here when needed */}
-      {/* {isSignUpView && <SignUpComponent />} */}
+      {isSignUpView && <SignUp toggleAuthView={toggleAuthView} />}
     </div>
   );
 };

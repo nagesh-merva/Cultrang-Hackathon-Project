@@ -1,10 +1,39 @@
-import React from 'react';
+import React from 'react'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const AdminLogin = ({ toggleAuthView }) => {
-  const handleLogin = (e) => {
-    e.preventDefault();
-    // handle admin login logic here
-  };
+  const navigate = useNavigate()
+
+  const handleLogin = async (e) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.target)
+    const email = formData.get('email')
+    const password = formData.get('password')
+
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/collages/login', {
+        contact_email: email,
+        password: password,
+      })
+
+      if (response.status === 200) {
+        const Response = response.data
+        console.log(Response)
+        sessionStorage.setItem('institute', Response.institute.name)
+        // console.log('Stored College :', sessionStorage.getItem('institute'))
+        alert('Login successful!')
+        navigate('/college/admin')
+      }
+    } catch (error) {
+      if (error.response) {
+        alert(error.response.data.error)
+      } else {
+        alert('An error occurred. Please try again.')
+      }
+    }
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white px-4 sm:px-0">
@@ -12,7 +41,7 @@ const AdminLogin = ({ toggleAuthView }) => {
         <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">Admin Login</h2>
         <form onSubmit={handleLogin} className="space-y-4 w-full">
           <div>
-            <label htmlFor="email" className="block text-gray-700 mb-2">Username:</label>
+            <label htmlFor="email" className="block text-gray-700 mb-2">Email:</label>
             <input
               type="email"
               id="email"
@@ -30,6 +59,11 @@ const AdminLogin = ({ toggleAuthView }) => {
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
             />
+          </div>
+          <div>
+            <button onClick={toggleAuthView} className='text-blue-400 hover:underline underline-offset-2 hover:tracking-wider'>
+              Dont have a account ? Register here
+            </button>
           </div>
           <button
             type="submit"

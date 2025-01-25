@@ -7,7 +7,8 @@ import RegStud from "../../components/CollegeAdmin/AdminPage/RegStud";
 import PlacedStud from "../../components/CollegeAdmin/AdminPage/PlacedStud";
 
 const AdminPage = () => {
-  const [selectedComponent, setSelectedComponent] = useState("Dashboard");
+  const storedActiveLink = sessionStorage.getItem("activeLink") || "Dashboard"
+  const [selectedComponent, setSelectedComponent] = useState(storedActiveLink);
 
   const handleLinkClick = (link) => {
     setSelectedComponent(link);

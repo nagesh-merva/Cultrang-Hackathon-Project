@@ -106,8 +106,10 @@ def create_profile():
 
 @app.route("/recruiter/signup", methods=["POST"])
 def Recruitersignup():
-    data = request.form
+    data = request.json
     files = request.files 
+    
+    print(data)
 
     if not data.get("company_name") or not data.get("password"):
         return jsonify({"success": False, "message": "Company name and password are required"}), 400
@@ -256,8 +258,8 @@ def manage_institute(institute_id):
 @app.route('/company-details', methods=['GET', 'PUT'])
 def company_details():
     if request.method == 'GET':
-        data = request.json
-        company_id = data["company_id"]
+        data = request.args
+        company_id = data.get("company_id")
 
         if not company_id:
             return jsonify({"error": "Missing company_id in headers"}), 400
@@ -301,12 +303,29 @@ def company_details():
         
         return jsonify({"success": True, "message": "Company details updated successfully"}), 200
 
+# filter job posting for collages 
+@app.route('/job-posting/filter', methods=['GET'])
+def filter_job_postings():
+    college_name = request.args.get("college_name")
+
+    if not college_name:
+        return jsonify({"error": "Missing college_name in query parameters"}), 400
+
+    jobs = list(db.jobs.find({
+        "selected_collages": college_name
+    }, {"_id": 0}))
+
+    if not jobs:
+        return jsonify({"message": "No jobs found for the specified college"}), 404
+
+    return jsonify({"jobs": jobs}), 200
+
 # Posting about a opening , fetching it on collages section , and deleting it
-@app.route('/job-posting', methods=['GET', 'POST','DELETE'])
+@app.route('/job-posting', methods=['GET', 'POST','DELETE','PUT'])
 def job_posting():
     if request.method == 'GET':
-        data = request.json
-        company_id = data["company_id"]
+        data = request.args
+        company_id = data.get("company_id")
 
         if not company_id:
             return jsonify({"error": "Missing company_id in headers"}), 400
@@ -315,6 +334,26 @@ def job_posting():
             return jsonify({"message": "No jobs found for the specified company_id"}), 404
         
         return jsonify(jobs), 200
+    elif request.method == 'PUT':
+        data = request.json
+        # print(data)
+        job_id = data.get("job_id")
+        
+        update_fields = {key: value for key, value in data.items() if value is not None}
+        update_fields["updated_at"] = get_current_timestamp()
+        # print(update_fields)
+        if not update_fields:
+            return jsonify({"error": "No valid fields to update"}), 400
+        
+        result = db.jobs.update_one(
+            {"id": job_id},
+            {"$set": update_fields}
+        )
+        if result.modified_count > 0:
+            return jsonify({"message": "Job details updated successfully"}), 200
+        else:
+            return jsonify({"error": "Job not found "}), 404
+        
     elif request.method == 'POST':
         data = request.json
         job = {
@@ -330,6 +369,7 @@ def job_posting():
             "selected_collages" : data["selected_collages"],
             "application_deadline": data["application_deadline"],
             "form" : data["form"],
+            "eligibility":[],
             "created_at": get_current_timestamp(),
             "updated_at": get_current_timestamp()
         }
@@ -353,7 +393,7 @@ def job_posting():
 @app.route('/job-applications', methods=['GET', 'POST', 'PUT'])
 def job_applications():
     if request.method == 'GET':
-        data = request.json
+        data = request.args
         company_id = data.get("company_id")
         
         if not company_id:
@@ -372,8 +412,10 @@ def job_applications():
         application = {
             "id": generate_uuid(),
             "job_id": data["job_id"],
-            "company_id": data["company_id"],
-            "student_id": data["student_id"],
+            "company": data["company"],
+            "job_position":data["job_position"],
+            "student_name": data["student_name"],
+            "college_name": data["college_name"],
             "status": data["status"],
             "form": data["form"],
             "submitted_at": get_current_timestamp(),
@@ -430,12 +472,78 @@ def job_applications():
 
         return jsonify({"success": True, "message": "Application updated successfully"}), 200
 
+# Filtering based on college
+
+@app.route('/student-job-posting/filter', methods=['GET'])
+def filter_applications():
+    college_name = request.args.get("college_name")
+
+    if not college_name:
+        return jsonify({"error": "Missing college_name in query parameters"}), 400
+
+    applications = list(db.applications.find({
+        "college_name": college_name
+    }, {"_id": 0}))
+
+    if not applications:
+        return jsonify({"message": "No applications found for the specified college"}), 404
+
+    return jsonify({"applications": applications}), 200
+
+# filtering students based on colleges
+@app.route('/allstudents-details', methods=['GET', 'PUT'])
+def Students():
+    if request.method == 'GET':
+        college_name = request.args.get("college_name")
+
+        if not college_name:
+            return jsonify({"error": "Missing college_name in query parameters"}), 400
+        
+        allstudents = list(db3.students.find({"college": college_name}, {"_id": 0, "password": 0}))
+        return jsonify(allstudents), 200
+    
+    # elif request.method == 'PUT':
+    #     data = request.form 
+    #     files = request.files 
+        
+    #     if not data.get("company_id"):
+    #         return jsonify({"success": False, "message": "Company ID is required"}), 400
+        
+    #     company_id = data["company_id"]
+        
+    #     company = db.companies.find_one({"id": company_id})
+        
+    #     if not company:
+    #         return jsonify({"success": False, "message": "Company not found"}), 404
+
+    #     update_data = {}
+        
+    #     for field in ["name", "description", "website", "industry"]:
+    #         if field in data:
+    #             update_data[field] = data[field]
+
+    #     if 'logo' in files:
+    #         logo_file = files['logo']
+    #         if logo_file:
+    #             logo_filename = f"uploads/logos/{generate_uuid()}_{logo_file.filename}"
+    #             os.makedirs(os.path.dirname(logo_filename), exist_ok=True)  
+    #             logo_file.save(logo_filename) 
+
+    #             update_data['logo'] = logo_filename
+
+    #     if update_data:
+    #         update_data["updated_at"] = get_current_timestamp()
+
+    #     db.companies.update_one({"id": company_id}, {"$set": update_data})
+        
+    #     return jsonify({"success": True, "message": "Company details updated successfully"}), 200
+
 
 # Adding Recruitment rounds , checking them on students portal , and updating its status
 @app.route('/recruitment-rounds', methods=['GET', 'POST','PUT'])
 def recruitment_rounds():
     if request.method == 'GET':
-        data = request.json
+        data = request.args
         company_id = data.get("company_id")
         
         if not company_id:

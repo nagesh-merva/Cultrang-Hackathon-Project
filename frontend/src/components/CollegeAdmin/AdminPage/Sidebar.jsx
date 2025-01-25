@@ -1,19 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaHome, FaBuilding, FaUsers, FaUserCheck, FaSignOutAlt } from "react-icons/fa";
 
 const Sidebar = ({ sidebarVisible, onLinkClick }) => {
-  const [activeLink, setActiveLink] = useState("Dashboard");
+  const storedActiveLink = sessionStorage.getItem("activeLink") || "Dashboard"
+  const [activeLink, setActiveLink] = useState(storedActiveLink);
 
+  console.log(activeLink)
   const handleLinkClick = (link) => {
     setActiveLink(link);
+    sessionStorage.setItem("activeLink", link)
     onLinkClick(link); // Call the parent function to change the selected component
-  };
+  }
+
+  useEffect(() => {
+    const storedActiveLink = sessionStorage.getItem("activeLink")
+    if (storedActiveLink) {
+      setActiveLink(storedActiveLink)
+    }
+  }, [])
 
   return (
     <div
-      className={`${
-        sidebarVisible ? "block" : "hidden"
-      } sm:block bg-gray-800 w-64 h-full sticky top-0 z-10 shadow-lg transition-all ease-in-out duration-300 flex flex-col`}
+      className={`${sidebarVisible ? "block" : "hidden"
+        } sm:block bg-gray-800 w-64 h-full sticky top-0 z-10 shadow-lg transition-all ease-in-out duration-300 flex flex-col`}
     >
       {/* Sidebar Content */}
       <div className="flex-1 p-6">
@@ -25,36 +34,32 @@ const Sidebar = ({ sidebarVisible, onLinkClick }) => {
         <nav>
           <ul className="space-y-2">
             <li
-              className={`flex items-center px-4 py-3 rounded-md hover:bg-gray-700 cursor-pointer transition-all duration-200 ${
-                activeLink === "Dashboard" ? "bg-gray-700" : ""
-              }`}
+              className={`flex items-center px-4 py-3 rounded-md hover:bg-gray-700 cursor-pointer transition-all duration-200 ${activeLink === "Dashboard" ? "bg-gray-700" : ""
+                }`}
               onClick={() => handleLinkClick("Dashboard")}
             >
               <FaHome className="mr-4 text-white" />
               <span className="text-white">Dashboard</span>
             </li>
             <li
-              className={`flex items-center px-4 py-3 rounded-md hover:bg-gray-700 cursor-pointer transition-all duration-200 ${
-                activeLink === "Company" ? "bg-gray-700" : ""
-              }`}
+              className={`flex items-center px-4 py-3 rounded-md hover:bg-gray-700 cursor-pointer transition-all duration-200 ${activeLink === "Company" ? "bg-gray-700" : ""
+                }`}
               onClick={() => handleLinkClick("Company")}
             >
               <FaBuilding className="mr-4 text-white" />
               <span className="text-white">Company</span>
             </li>
             <li
-              className={`flex items-center px-4 py-3 rounded-md hover:bg-gray-700 cursor-pointer transition-all duration-200 ${
-                activeLink === "Registered Students" ? "bg-gray-700" : ""
-              }`}
+              className={`flex items-center px-4 py-3 rounded-md hover:bg-gray-700 cursor-pointer transition-all duration-200 ${activeLink === "Registered Students" ? "bg-gray-700" : ""
+                }`}
               onClick={() => handleLinkClick("Registered Students")}
             >
               <FaUsers className="mr-4 text-white" />
               <span className="text-white">Registered Students</span>
             </li>
             <li
-              className={`flex items-center px-4 py-3 rounded-md hover:bg-gray-700 cursor-pointer transition-all duration-200 ${
-                activeLink === "Placed Students" ? "bg-gray-700" : ""
-              }`}
+              className={`flex items-center px-4 py-3 rounded-md hover:bg-gray-700 cursor-pointer transition-all duration-200 ${activeLink === "Placed Students" ? "bg-gray-700" : ""
+                }`}
               onClick={() => handleLinkClick("Placed Students")}
             >
               <FaUserCheck className="mr-4 text-white" />
