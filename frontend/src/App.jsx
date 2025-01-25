@@ -2,7 +2,8 @@ import React from "react";
 import { Routes, Route } from "react-router-dom"
 import LandingPage from "./pages/OtherPages/LandingPage";
 import Auth from "./pages/Recruiter/Auth";
-import RecruiterPage from "./pages/RecruiterPage/RecruiterPage"; 
+import RecruiterPage from "./pages/RecruiterPage/RecruiterPage";
+
 const App = () => {
   return <div>
    <Routes>
