@@ -17,8 +17,8 @@ def generate_uuid():
 def get_current_timestamp():
     return datetime.utcnow().isoformat()
 
-@app.route("/signup", methods=["POST"])
-def signup():
+@app.route("/recruiter/signup", methods=["POST"])
+def Recruitersignup():
     data = request.json
 
     if not data.get("company_name") or not data.get("password"):
@@ -45,8 +45,8 @@ def signup():
 
     return jsonify({"success": True, "message": "Company registered successfully", "company_id": new_company["id"]}), 201
 
-@app.route("/login", methods=["POST"])
-def login():
+@app.route("/recruiter/login", methods=["POST"])
+def Recruiterlogin():
     data = request.json
 
     if not data.get("company_name") or not data.get("password"):
@@ -60,6 +60,84 @@ def login():
         return jsonify({"success": False, "message": "Invalid company name or password"}), 401
 
     return jsonify({"success": True, "message": "Login successful", "company_id": company["id"]}), 200
+
+@app.route('/collages/login', methods=['POST'])
+def Collageslogin():
+    data = request.json
+    email = data.get('contact_email')
+    password = data.get('password')
+    
+    if not email or not password:
+        return jsonify({"error": "Missing email or password"}), 400
+    
+    institute = db2.Collage_Admin.find_one({"contact_email": email})
+    
+    if institute:
+        if institute['password'] == password:
+            return jsonify({"message": "Login successful", "institute": {"id": institute["id"], "name": institute["name"]}}), 200
+        else:
+            return jsonify({"error": "Invalid password"}), 401
+    else:
+        return jsonify({"error": "Institute not found"}), 404
+
+@app.route('/collages/signup', methods=['POST'])
+def Collagessignup():
+    data = request.json
+    email = data.get('contact_email')
+    
+    if not email:
+        return jsonify({"error": "Missing email"}), 400
+    
+    existing_institute = db2.Collage_Admin.find_one({"contact_email": email})
+    
+    if existing_institute:
+        return jsonify({"error": "Institute with this email already exists"}), 400
+    
+    institute_id = generate_uuid()
+    new_institute = {
+        "id": institute_id,
+        "name": data.get("name", "Unnamed Institute"),
+        "password": data["password"], 
+        "contact_email": email,
+        "contact_phone": data.get("contact_phone", ""),
+        "description": data.get("description", ""),
+        "logo_url": data.get("logo_url", ""),
+        "location": data.get("location", ""),
+        "placement_policy": data.get("placement_policy", ""),
+        "created_at": get_current_timestamp(),
+        "updated_at": get_current_timestamp()
+    }
+
+    db2.Collage_Admin.insert_one(new_institute)
+    return jsonify({"message": "Institute created successfully", "institute": {"id": institute_id, "name": new_institute["name"]}}), 201
+
+
+@app.route('/collages/<institute_id>', methods=['GET', 'PUT'])
+def manage_institute(institute_id):
+    if request.method == 'GET':
+        institute = db2.Collage_Admin.find_one({"id": institute_id},{"_id": 0})
+        
+        if not institute:
+            return jsonify({"error": "Institute not found"}), 404
+        
+        institute_info = {key: institute[key] for key in institute if key != "password"}
+        return jsonify(institute_info), 200
+
+    elif request.method == 'PUT':
+        data = request.json
+    
+        update_fields = {key: value for key, value in data.items() if value is not None}
+        update_fields["updated_at"] = get_current_timestamp()
+
+        result = db2.Collage_Admin.update_one(
+            {"id": institute_id},
+            {"$set": update_fields}
+        )
+
+        if result.modified_count > 0:
+            return jsonify({"message": "Institute details updated successfully"}), 200
+        else:
+            return jsonify({"error": "Institute not found or no changes made"}), 404
 
 @app.route('/company-details', methods=['GET', 'PUT'])
 def company_details():
@@ -95,10 +173,8 @@ def company_details():
 @app.route('/job-posting', methods=['GET', 'POST','DELETE'])
 def job_posting():
     if request.method == 'GET':
-        print(request.headers)
-        company_id = request.headers.get('company_id')
-        print(company_id)
-        print(request.headers.get('company_id'))
+        data = request.json
+        company_id = data["company_id"]
 
         if not company_id:
             return jsonify({"error": "Missing company_id in headers"}), 400
@@ -144,8 +220,9 @@ def job_posting():
 @app.route('/job-applications', methods=['GET', 'POST','PUT'])
 def job_applications():
     if request.method == 'GET':
-        company_id = request.headers.get('company_id')
-
+        data = request.json
+        company_id = data["company_id"]
+        
         if not company_id:
             return jsonify({"error": "Missing company_id in headers"}), 400
         
