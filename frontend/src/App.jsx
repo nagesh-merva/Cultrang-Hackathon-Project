@@ -1,12 +1,7 @@
+import React from "react";
 
-function App() {
-  return (
-    <>
-      <p className="text-black font-bold text-6xl place-self-center">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+const App = () => {
+  return <div></div>;
+};
 
-export default App
+export default App;
