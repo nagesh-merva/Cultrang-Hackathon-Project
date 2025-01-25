@@ -2,15 +2,12 @@ import React from "react";
 import { Routes, Route } from "react-router-dom"
 import LandingPage from "./pages/OtherPages/LandingPage";
 import Auth from "./pages/Recruiter/Auth";
-import ProfilePage from "./pages/Recruiter/CompanyProfile";
-import RecruiterPage from "./pages/RecruiterPage/RecruiterPage";
-
+import RecruiterPage from "./pages/RecruiterPage/RecruiterPage"; 
 const App = () => {
   return <div>
-    <Routes>
+   <Routes>
       <Route index path="/" element={<LandingPage />} />
       <Route path="/recruiters/auth" element={<Auth />} />
-      <Route path="/recruiters/companyprofile" element={<ProfilePage />} />
       <Route path="/recruiters/dashboard" element={<RecruiterPage />} />
     </Routes>
   </div>
