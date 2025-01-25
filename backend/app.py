@@ -17,6 +17,8 @@ def generate_uuid():
 def get_current_timestamp():
     return datetime.utcnow().isoformat()
 
+# Recruiters Login - signup
+
 @app.route("/recruiter/signup", methods=["POST"])
 def Recruitersignup():
     data = request.json
@@ -60,6 +62,8 @@ def Recruiterlogin():
         return jsonify({"success": False, "message": "Invalid company name or password"}), 401
 
     return jsonify({"success": True, "message": "Login successful", "company_id": company["id"]}), 200
+
+# collages Login - signup
 
 @app.route('/collages/login', methods=['POST'])
 def Collageslogin():
@@ -111,6 +115,7 @@ def Collagessignup():
     db2.Collage_Admin.insert_one(new_institute)
     return jsonify({"message": "Institute created successfully", "institute": {"id": institute_id, "name": new_institute["name"]}}), 201
 
+# Collages Routes
 
 @app.route('/collages/<institute_id>', methods=['GET', 'PUT'])
 def manage_institute(institute_id):
@@ -139,6 +144,9 @@ def manage_institute(institute_id):
         else:
             return jsonify({"error": "Institute not found or no changes made"}), 404
 
+# Company / Recruiters Route
+
+# Fetching and edting company details 
 @app.route('/company-details', methods=['GET', 'PUT'])
 def company_details():
     if request.method == 'GET':
@@ -170,6 +178,7 @@ def company_details():
         
         return jsonify({"success": True, "message": "Company details updated successfully"}), 200
 
+# Posting about a opening , fetching it on collages section , and deleting it
 @app.route('/job-posting', methods=['GET', 'POST','DELETE'])
 def job_posting():
     if request.method == 'GET':
@@ -217,6 +226,7 @@ def job_posting():
 
         return jsonify({"success": True, "message": "Job posting deleted successfully"}), 200
 
+# Receiving application for the opening , checking them and editing its status
 @app.route('/job-applications', methods=['GET', 'POST','PUT'])
 def job_applications():
     if request.method == 'GET':
@@ -261,6 +271,7 @@ def job_applications():
         
         return jsonify({"success": True, "message": "Company details updated successfully"}), 200
 
+# Adding Recruitment rounds , checking them on students portal , and updating its status
 @app.route('/recruitment-rounds', methods=['GET', 'POST','PUT'])
 def recruitment_rounds():
     if request.method == 'GET':
@@ -296,7 +307,8 @@ def recruitment_rounds():
         db.recruitment_rounds.update_one({"id":recruitment_id}, {"$set": {"status":data["status"],"updated_at": get_current_timestamp()}})
         
         return jsonify({"success": True, "message": "Recruitment Rounds details updated successfully"}), 200
-    
+
+# Announcing and displaying rounds results
 @app.route('/round-results', methods=['GET', 'POST'])
 def round_results():
     if request.method == 'GET':
