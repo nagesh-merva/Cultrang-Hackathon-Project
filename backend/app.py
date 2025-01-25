@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from pymongo import MongoClient
@@ -10,18 +11,103 @@ CORS(app)
 client = MongoClient("mongodb+srv://NAGESH:Nagesh22%4025$@hackathon.zqqxl.mongodb.net/")
 db = client['recruitment_db'] 
 db2 = client['Collage_db']
-
+db3 = client['students_db']
 def generate_uuid():
     return str(uuid4())
 
 def get_current_timestamp():
     return datetime.utcnow().isoformat()
 
+# Students Login - Signup route
+@app.route('/student/signup', methods=['POST'])
+def signup():
+    data = request.json
+
+    if db3.students.find_one({"email": data['email']}):
+        return jsonify({"success": False, "message": "Student already exists"}), 409
+    
+    student = {
+        "id":generate_uuid(),
+        "name": data.get('name'),
+        "skills": [],
+        "resume": None,
+        "college": data['college'],
+        "degree": "",
+        "rollno": data['rollno'],
+        "email": data['email'],
+        "phone": None,
+        "profilePic": None,
+        "password": data['password'],
+        "created_at": get_current_timestamp(),
+        "updated_at": get_current_timestamp()
+    }
+    
+    db3.students.insert_one(student)
+    return jsonify({"success": True, "message": "Signup successful"}), 201
+
+@app.route('/student/login', methods=['POST'])
+def login():
+    data = request.json
+    
+    email = data.get('email')
+    password = data.get('password')
+    
+    if not all([email, password]):
+        return jsonify({"success": False, "message": "Email and password are required"}), 400
+
+    student = db3.students.find_one({"email": email})
+
+    if not student or student['password'] != password:
+        return jsonify({"success": False, "message": "Invalid email or password"}), 401
+
+    return jsonify({"success": True, "message": "Login successful"}), 200
+
+# Student profile updates
+@app.route('/students/profile', methods=['PUT'])
+def create_profile():
+    data = request.form
+    files = request.files
+
+    id = data.get('id')
+    if not id:
+        return jsonify({"success": False, "message": "Id is required"}), 400
+
+    student = db3.students.find_one({"id": id})
+    if not student:
+        return jsonify({"success": False, "message": "Student not found"}), 404
+
+    updated_data = {}
+    update_fields = {key: value for key, value in data.items() if value is not None}
+    update_fields["updated_at"] = get_current_timestamp()
+    updated_data.update(update_fields)
+
+    if 'resume' in files:
+        resume_file = files['resume']
+        if resume_file:
+            resume_path = f"uploads/resumes/{generate_uuid()}_{resume_file.filename}"
+            os.makedirs(os.path.dirname(resume_path), exist_ok=True)
+            resume_file.save(resume_path)
+            updated_data['resume'] = resume_path
+
+    if 'profilePic' in files:
+        profile_pic_file = files['profilePic']
+        if profile_pic_file:
+            profile_pic_path = f"uploads/profile_pics/{generate_uuid()}_{profile_pic_file.filename}"
+            os.makedirs(os.path.dirname(profile_pic_path), exist_ok=True)
+            profile_pic_file.save(profile_pic_path)
+            updated_data['profilePic'] = profile_pic_path
+
+    db3.students.update_one({"id": id}, {"$set": updated_data})
+
+    return jsonify({"success": True, "message": "Profile updated successfully"}), 200
+
+
 # Recruiters Login - signup
 
 @app.route("/recruiter/signup", methods=["POST"])
 def Recruitersignup():
-    data = request.json
+    data = request.form
+    files = request.files 
 
     if not data.get("company_name") or not data.get("password"):
         return jsonify({"success": False, "message": "Company name and password are required"}), 400
@@ -32,14 +118,24 @@ def Recruitersignup():
     if db.companies.find_one({"company_name": company_name}):
         return jsonify({"success": False, "message": "Company already exists"}), 409
 
+    if 'logo' in files:
+        logo_file = files['logo']
+        if logo_file:
+            logo_filename = f"uploads/logos/{generate_uuid()}_{logo_file.filename}"
+            os.makedirs(os.path.dirname(logo_filename), exist_ok=True) 
+            logo_file.save(logo_filename)  
+
+    else:
+        return jsonify({"success": False, "message": "Logo file is required"}), 400
+
     new_company = {
         "id": generate_uuid(),
         "company_name": company_name,
         "password": password,
-        "logo": data["logo"],
-        "description": data["description"],
-        "website": data["website"],
-        "industry": data["industry"],
+        "logo": logo_filename, 
+        "description": data.get("description", ""),
+        "website": data.get("website", ""),
+        "industry": data.get("industry", ""),
         "created_at": get_current_timestamp(),
         "updated_at": get_current_timestamp()
     }
@@ -105,7 +201,7 @@ def Collagessignup():
         "contact_email": email,
         "contact_phone": data.get("contact_phone", ""),
         "description": data.get("description", ""),
-        "logo_url": data.get("logo_url", ""),
+        "logo": data.get("logo", ""),
         "location": data.get("location", ""),
         "placement_policy": data.get("placement_policy", ""),
         "created_at": get_current_timestamp(),
@@ -120,19 +216,28 @@ def Collagessignup():
 @app.route('/collages/<institute_id>', methods=['GET', 'PUT'])
 def manage_institute(institute_id):
     if request.method == 'GET':
-        institute = db2.Collage_Admin.find_one({"id": institute_id},{"_id": 0})
-        
+        institute = db2.Collage_Admin.find_one({"id": institute_id}, {"_id": 0})
+
         if not institute:
             return jsonify({"error": "Institute not found"}), 404
-        
+
         institute_info = {key: institute[key] for key in institute if key != "password"}
         return jsonify(institute_info), 200
 
     elif request.method == 'PUT':
-        data = request.json
-    
+        data = request.form
+        files = request.files 
+
         update_fields = {key: value for key, value in data.items() if value is not None}
         update_fields["updated_at"] = get_current_timestamp()
+
+        if 'logo' in files:
+            logo_file = files['logo']
+            if logo_file:
+                logo_filename = f"uploads/logos/{generate_uuid()}_{logo_file.filename}"
+                os.makedirs(os.path.dirname(logo_filename), exist_ok=True)
+                logo_file.save(logo_filename)
+                update_fields['logo'] = logo_filename
 
         result = db2.Collage_Admin.update_one(
             {"id": institute_id},
@@ -144,6 +249,7 @@ def manage_institute(institute_id):
         else:
             return jsonify({"error": "Institute not found or no changes made"}), 404
 
+
 # Company / Recruiters Route
 
 # Fetching and edting company details 
@@ -154,7 +260,8 @@ def company_details():
         return jsonify(companies), 200
     
     elif request.method == 'PUT':
-        data = request.json
+        data = request.form 
+        files = request.files 
         
         if not data.get("company_id"):
             return jsonify({"success": False, "message": "Company ID is required"}), 400
@@ -167,9 +274,19 @@ def company_details():
             return jsonify({"success": False, "message": "Company not found"}), 404
 
         update_data = {}
-        for field in ["name", "password", "logo", "description", "website", "industry"]:
+        
+        for field in ["name", "description", "website", "industry"]:
             if field in data:
                 update_data[field] = data[field]
+
+        if 'logo' in files:
+            logo_file = files['logo']
+            if logo_file:
+                logo_filename = f"uploads/logos/{generate_uuid()}_{logo_file.filename}"
+                os.makedirs(os.path.dirname(logo_filename), exist_ok=True)  
+                logo_file.save(logo_filename) 
+
+                update_data['logo'] = logo_filename
 
         if update_data:
             update_data["updated_at"] = get_current_timestamp()
@@ -227,11 +344,11 @@ def job_posting():
         return jsonify({"success": True, "message": "Job posting deleted successfully"}), 200
 
 # Receiving application for the opening , checking them and editing its status
-@app.route('/job-applications', methods=['GET', 'POST','PUT'])
+@app.route('/job-applications', methods=['GET', 'POST', 'PUT'])
 def job_applications():
     if request.method == 'GET':
         data = request.json
-        company_id = data["company_id"]
+        company_id = data.get("company_id")
         
         if not company_id:
             return jsonify({"error": "Missing company_id in headers"}), 400
@@ -241,35 +358,72 @@ def job_applications():
             return jsonify({"message": "No Applications found for the specified company_id"}), 404
 
         return jsonify(applications), 200
+
     elif request.method == 'POST':
-        data = request.json
+        data = request.form
+        files = request.files 
+        
         application = {
             "id": generate_uuid(),
             "job_id": data["job_id"],
             "company_id": data["company_id"],
             "student_id": data["student_id"],
             "status": data["status"],
-            "form" : data["form"],
+            "form": data["form"],
             "submitted_at": get_current_timestamp(),
             "updated_at": get_current_timestamp()
         }
+
+        file_paths = {}
+        for fieldname, file in files.items():
+            if file:
+                file_path = f"uploads/applications/{generate_uuid()}_{file.filename}"
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                file.save(file_path)
+                file_paths[fieldname] = file_path
+        
+        if file_paths:
+            application["form"]["files"] = file_paths
+
         db.applications.insert_one(application)
         return jsonify({"message": "Application submitted successfully!"}), 201
-    
+
     elif request.method == 'PUT':
-        data = request.json
-        application_id = data["id"]
-        if not  application_id :
+        data = request.form
+        files = request.files 
+        
+        application_id = data.get("id")
+        if not application_id:
             return jsonify({"success": False, "message": "Application ID is required"}), 400
         
-        application = db.applications.find_one({"id": application_id })
+        application = db.applications.find_one({"id": application_id})
         
         if not application:
             return jsonify({"success": False, "message": "Application not found"}), 404
 
-        db.applications.update_one({"id": application_id}, {"$set": {"status":data["status"],"updated_at": get_current_timestamp()}})
+        update_data = {
+            "status": data["status"],
+            "updated_at": get_current_timestamp()
+        }
+
+        file_paths = {}
+        for fieldname, file in files.items():
+            if file:
+                file_path = f"uploads/applications/{generate_uuid()}_{file.filename}"
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                file.save(file_path)
+                file_paths[fieldname] = file_path
+
+        if file_paths:
+            if "form" not in update_data:
+                update_data["form"] = {}
+
+            update_data["form"]["files"] = file_paths
         
-        return jsonify({"success": True, "message": "Company details updated successfully"}), 200
+        db.applications.update_one({"id": application_id}, {"$set": update_data})
+
+        return jsonify({"success": True, "message": "Application updated successfully"}), 200
+
 
 # Adding Recruitment rounds , checking them on students portal , and updating its status
 @app.route('/recruitment-rounds', methods=['GET', 'POST','PUT'])
