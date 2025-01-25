@@ -1,12 +1,19 @@
+import React from "react";
+import { Routes, Route } from "react-router-dom"
+import LandingPage from "./pages/OtherPages/LandingPage";
+import Auth from "./pages/Recruiter/Auth";
+import ProfilePage from "./pages/Recruiter/CompanyProfile";
+import RecruiterPage from "./pages/RecruiterPage/RecruiterPage";
 
-function App() {
-  return (
-    <>
-      <p className="text-black font-bold text-6xl place-self-center">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+const App = () => {
+  return <div>
+    <Routes>
+      <Route index path="/" element={<LandingPage />} />
+      <Route path="/recruiters/auth" element={<Auth />} />
+      <Route path="/recruiters/companyprofile" element={<ProfilePage />} />
+      <Route path="/recruiters/dashboard" element={<RecruiterPage />} />
+    </Routes>
+  </div>
 }
 
 export default App

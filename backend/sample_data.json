@@ -1,0 +1,204 @@
+{
+    "companies": [
+        {
+            "id": "1d2a3b4c-5e6f-7g8h-9i0j-123456789abc",
+            "name": "Tech Innovators",
+            "password": "Tech Innovators",
+            "logo": "https://techinnovators.com/logo.png",
+            "description": "A leading technology company specializing in AI and cloud computing.",
+            "website": "https://techinnovators.com",
+            "industry": "Technology",
+            "created_at": "2025-01-01T12:00:00Z",
+            "updated_at": "2025-01-01T12:00:00Z"
+        },
+        {
+            "id": "2d3a4b5c-6e7f-8g9h-0i1j-123456789abc",
+            "name": "Green Solutions",
+            "password": "Tech Innovators",
+            "logo": "https://greensolutions.com/logo.png",
+            "description": "Providing sustainable solutions for energy and environment.",
+            "website": "https://greensolutions.com",
+            "industry": "Energy",
+            "created_at": "2025-01-02T13:00:00Z",
+            "updated_at": "2025-01-02T13:00:00Z"
+        }
+    ],
+    "jobs": [
+        {
+            "id": "3d4a5b6c-7e8f-9g0h-1i2j-123456789abc",
+            "company_id": "1d2a3b4c-5e6f-7g8h-9i0j-123456789abc",
+            "title": "Software Engineer",
+            "description": "Develop scalable web applications.",
+            "requirements": [
+                "Proficient in Python",
+                "Experience with Flask",
+                "Knowledge of MongoDB"
+            ],
+            "responsibilities": [
+                "Develop APIs",
+                "Write clean code",
+                "Collaborate with the team"
+            ],
+            "location": "Remote",
+            "job_type": "Full-time",
+            "status": "open",
+            "application_deadline": "2025-02-01T23:59:59Z",
+            "form": {
+                "fields": [
+                    {
+                        "field_name": "Full Name",
+                        "field_type": "text",
+                        "is_required": true,
+                        "options": []
+                    },
+                    {
+                        "field_name": "Resume",
+                        "field_type": "file",
+                        "is_required": true,
+                        "options": []
+                    },
+                    {
+                        "field_name": "Preferred Location",
+                        "field_type": "dropdown",
+                        "is_required": false,
+                        "options": [
+                            "Remote",
+                            "On-site"
+                        ]
+                    }
+                ]
+            },
+            "created_at": "2025-01-01T12:30:00Z",
+            "updated_at": "2025-01-01T12:30:00Z"
+        },
+        {
+            "id": "4d5a6b7c-8e9f-0g1h-2i3j-123456789abc",
+            "company_id": "2d3a4b5c-6e7f-8g9h-0i1j-123456789abc",
+            "title": "Data Scientist",
+            "description": "Analyze large datasets to extract actionable insights.",
+            "requirements": [
+                "Proficient in R/Python",
+                "Experience with machine learning",
+                "Knowledge of data visualization tools"
+            ],
+            "responsibilities": [
+                "Develop predictive models",
+                "Prepare data for analysis",
+                "Present findings to stakeholders"
+            ],
+            "location": "On-site",
+            "job_type": "Full-time",
+            "status": "open",
+            "application_deadline": "2025-02-15T23:59:59Z",
+            "form": {
+                "fields": [
+                    {
+                        "field_name": "Full Name",
+                        "field_type": "text",
+                        "is_required": true,
+                        "options": []
+                    },
+                    {
+                        "field_name": "Resume",
+                        "field_type": "file",
+                        "is_required": true,
+                        "options": []
+                    },
+                    {
+                        "field_name": "Preferred Location",
+                        "field_type": "dropdown",
+                        "is_required": false,
+                        "options": [
+                            "Remote",
+                            "On-site"
+                        ]
+                    }
+                ]
+            },
+            "created_at": "2025-01-02T14:00:00Z",
+            "updated_at": "2025-01-02T14:00:00Z"
+        }
+    ],
+    "applications": [
+        {
+            "id": "5d6a7b8c-9e0f-1g2h-3i4j-123456789abc",
+            "job_id": "4d5a6b7c-8e9f-0g1h-2i3j-123456789abc",
+            "student_id": "abc123",
+            "status": "applied",
+            "submitted_at": "2025-01-05T15:00:00Z",
+            "created_at": "2025-01-05T15:00:00Z",
+            "updated_at": "2025-01-05T15:00:00Z",
+            "application": {
+                "fields": [
+                    {
+                        "field_name": "Full Name",
+                        "response_value": "John Doe",
+                        "field_id": "field1-uuid"
+                    },
+                    {
+                        "field_name": "Resume",
+                        "response_value": "john_doe_resume.pdf",
+                        "field_id": "field2-uuid"
+                    },
+                    {
+                        "field_name": "Preferred Location",
+                        "response_value": "On-site",
+                        "field_id": "field3-uuid"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "6e7a8b9c-1f2g-3h4i-5j6k-123456789abc",
+            "job_id": "4d5a6b7c-8e9f-0g1h-2i3j-123456789abc",
+            "student_id": "def456",
+            "status": "applied",
+            "submitted_at": "2025-01-06T12:00:00Z",
+            "created_at": "2025-01-06T12:00:00Z",
+            "updated_at": "2025-01-06T12:00:00Z",
+            "application": {
+                "fields": [
+                    {
+                        "field_name": "Full Name",
+                        "response_value": "Jane Smith",
+                        "field_id": "field1-uuid"
+                    },
+                    {
+                        "field_name": "Resume",
+                        "response_value": "jane_smith_resume.pdf",
+                        "field_id": "field2-uuid"
+                    },
+                    {
+                        "field_name": "Preferred Location",
+                        "response_value": "Remote",
+                        "field_id": "field3-uuid"
+                    }
+                ]
+            }
+        }
+    ],
+    "recruitment_rounds": [
+        {
+            "id": "6d7a8b9c-0e1f-2g3h-4i5j-123456789abc",
+            "job_id": "3d4a5b6c-7e8f-9g0h-1i2j-123456789abc",
+            "name": "Technical Interview",
+            "description": "A one-hour interview with technical questions.",
+            "type": "interview",
+            "status": "pending",
+            "order_number": 1,
+            "created_at": "2025-01-03T16:00:00Z",
+            "updated_at": "2025-01-03T16:00:00Z"
+        }
+    ],
+    "round_results": [
+        {
+            "id": "7d8a9b0c-1e2f-3g4h-5i6j-123456789abc",
+            "round_id": "6d7a8b9c-0e1f-2g3h-4i5j-123456789abc",
+            "application_id": "5d6a7b8c-9e0f-1g2h-3i4j-123456789abc",
+            "status": "pending",
+            "feedback": "Awaiting review",
+            "created_at": "2025-01-03T16:30:00Z",
+            "updated_at": "2025-01-03T16:30:00Z"
+        }
+    ]
+}
