@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   FaHome,
   FaUserAlt,
@@ -8,8 +7,19 @@ import {
   FaBuilding,
   FaSignOutAlt,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const Sidebar = ({ sidebarVisible, onLinkClick }) => {
+  const [companyName, setCompanyName] = useState("");
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const companyName = sessionStorage.getItem("company_name");
+    setCompanyName(companyName);
+  }, []);
+
   const [activeLink, setActiveLink] = useState("Dashboard");
 
   const handleLinkClick = (link) => {
@@ -18,7 +28,13 @@ const Sidebar = ({ sidebarVisible, onLinkClick }) => {
   };
 
   const handleLogout = () => {
+    // Log out message
     console.log("Logged out");
+
+    // Remove company_name and company_id from sessionStorage
+    sessionStorage.removeItem("company_name");
+    sessionStorage.removeItem("company_id");
+    navigate("/recruiters/auth");
   };
 
   return (
@@ -29,12 +45,8 @@ const Sidebar = ({ sidebarVisible, onLinkClick }) => {
     >
       <div className="p-6">
         <div className="flex items-center mb-6 mt-7">
-          <img
-            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAcCAMAAABIzV/hAAAAgVBMVEX8xEH+xT/8wjb8wC38xUD/xj78wTL8yVP+4aj+893/+e//68Tzv0P/xjv////vz4dUZZPqu0n93Zj/+ez/9tR4doIAPbL914j//PfHqnAAOLSRh4H8y1r+8dTy0H9NYp7/yjj/6aQARqRDW6X/7781VpabjXz/6a0hUZr903nRqljhnbcPAAAAfklEQVR4AdxP0wGAUADM9mO29h8wuybofs/Mz8FyPCeIkvTByIqqTdANk31QkmqtsB1XfHKyB2YKIuzefSKxKKUz5weh+ZwhRiSeqASn2SNRpmtZXpRPivNWqqpfLkYiG9WYzIuT5662Y4SP33yv03FyWqzYg4uNkQEoM7wBAKKJB/ikihlkAAAAAElFTkSuQmCC"
-            alt="Company Logo"
-            className="h-10 w-10 mr-4"
-          />
-          <h2 className="text-2xl text-slate-600 font-bold">One Shield</h2>
+          <img src="#" alt="Company Logo" className="h-10 w-10 mr-4" />
+          <h2 className="text-2xl text-slate-600 font-bold">{companyName}</h2>
         </div>
 
         <nav>

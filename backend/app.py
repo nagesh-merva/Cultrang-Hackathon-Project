@@ -130,7 +130,15 @@ def Recruitersignup():
     #         logo_filename = f"uploads/logos/{generate_uuid()}_{logo_file.filename}"
     #         os.makedirs(os.path.dirname(logo_filename), exist_ok=True) 
     #         logo_file.save(logo_filename)  
+    # if 'logo' in files:
+    #     logo_file = files['logo']
+    #     if logo_file:
+    #         logo_filename = f"uploads/logos/{generate_uuid()}_{logo_file.filename}"
+    #         os.makedirs(os.path.dirname(logo_filename), exist_ok=True) 
+    #         logo_file.save(logo_filename)  
 
+    # else:
+    #     return jsonify({"success": False, "message": "Logo file is required"}), 400
     # else:
     #     return jsonify({"success": False, "message": "Logo file is required"}), 400
 
@@ -265,6 +273,14 @@ def manage_institute(institute_id):
 
 
 # Company / Recruiters Route
+
+@app.route('/allcollages',methods=['GET'])
+def allCollages():
+    if request.method == 'GET':
+        allInstitute = list(db2.Collage_Admin.find({},{"_id":0}))
+        return jsonify(allInstitute),200
+    else:
+        return jsonify({"status":False,"message":"Method not allowed"}),404
 
 # Fetching and edting company details 
 @app.route('/company-details', methods=['GET', 'PUT'])
@@ -406,6 +422,7 @@ def job_posting():
 @app.route('/job-applications', methods=['GET', 'POST', 'PUT'])
 def job_applications():
     if request.method == 'GET':
+        data = request.args
         data = request.args
         company_id = data.get("company_id")
         student_name = data.get("student_name")

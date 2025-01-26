@@ -1,8 +1,10 @@
 import React from "react";
 import { FaUserGraduate, FaBriefcase, FaGlobeAmericas } from "react-icons/fa";
 import Footer from "../../components/Others/Footer";
+import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {
+  const navigate = useNavigate();
   return (
     <div className="bg-gray-50">
       {/* Header Section */}
@@ -35,8 +37,8 @@ const LandingPage = () => {
               streamline your hiring process.
             </p>
             <a
-              href="#"
-              className="inline-flex items-center px-8 py-2 mt-4 text-lg font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+              onClick={() => navigate("/recruiters/auth")}
+              className="cursor-pointer inline-flex items-center px-8 py-2 mt-4 text-lg font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-colors"
             >
               Get Started
             </a>
