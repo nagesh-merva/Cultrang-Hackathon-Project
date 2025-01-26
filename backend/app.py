@@ -264,7 +264,7 @@ def company_details():
         if not company_id:
             return jsonify({"error": "Missing company_id in headers"}), 400
         
-        companies = list(db.companies.find({"company_id": company_id}, {"_id": 0, "password": 0}))
+        companies = list(db.companies.find({"id": company_id}, {"_id": 0, "password": 0}))
         return jsonify(companies), 200
     
     elif request.method == 'PUT':

@@ -106,7 +106,8 @@ const Company = () => {
             >
               <div className="w-full">
                 <h3 className="text-xl font-semibold">{job.company}</h3>
-                <p className="text-sm text-gray-500">Job: {job.created_at}</p>
+                <p className="text-sm text-gray-500">Job: {job.title}</p>
+                <p className="text-sm text-gray-500">Type: {job.job_type}</p>
                 <p className="text-sm text-gray-500">Package: {job.package}</p>
                 <ul className="mt-2 text-sm text-gray-700">
                   {job.eligibility.map((item, idx) => (
