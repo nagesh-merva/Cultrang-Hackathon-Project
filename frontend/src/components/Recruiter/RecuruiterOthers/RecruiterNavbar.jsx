@@ -16,7 +16,6 @@ const Navbar = ({ toggleSidebar }) => {
         <div className="flex items-center w-full justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <img src="/internspirit-logo.svg" alt="logo" className="h-8" />
             <span className="text-lg font-bold hidden md:block md:text-4xl">
               InternSpirit
             </span>

@@ -1,14 +1,14 @@
 import React from "react";
+import { FaUniversity } from "react-icons/fa";
 
 const CollegeCard = ({ college }) => {
   return (
     <div className="max-w-sm rounded-lg shadow-lg bg-white overflow-hidden">
       {/* College Logo */}
-      <img
-        src={college.logo}
-        alt={`${college.name} Logo`}
-        className="w-full h-32 object-cover"
-      />
+      <div className="px-6 pt-6 flex justify-center items-center">
+        <FaUniversity size={100} className="text-gray-800 " />
+      </div>
+
       <div className="p-6">
         {/* College Name */}
         <h2 className="text-xl font-semibold text-gray-800">{college.name}</h2>

@@ -1,14 +1,15 @@
 import React from "react";
 import { FaUserGraduate, FaBriefcase, FaGlobeAmericas } from "react-icons/fa";
 import Footer from "../../components/Others/Footer";
+import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {
+  const navigate = useNavigate();
   return (
     <div className="bg-gray-50">
       {/* Header Section */}
       <div className="bg-blue-700 text-white py-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-3">
-          <img src="./logo.png" alt="logo" />
           <h1 className="text-3xl font-bold tracking-wide">InternSpirit</h1>
         </div>
       </div>
@@ -35,8 +36,8 @@ const LandingPage = () => {
               streamline your hiring process.
             </p>
             <a
-              href="#"
-              className="inline-flex items-center px-8 py-2 mt-4 text-lg font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+              onClick={() => navigate("/recruiters/auth")}
+              className="cursor-pointer inline-flex items-center px-8 py-2 mt-4 text-lg font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-colors"
             >
               Get Started
             </a>
@@ -52,7 +53,7 @@ const LandingPage = () => {
               internship and job opportunities.
             </p>
             <a
-              href="#"
+              onClick={() => navigate("/college/auth")}
               className="inline-flex items-center px-8 py-2 mt-4 text-lg font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-colors"
             >
               Get Started
@@ -67,7 +68,7 @@ const LandingPage = () => {
               recruiters and organizations.
             </p>
             <a
-              href="#"
+              onClick={() => navigate("/student/auth")}
               className="inline-flex items-center px-8 py-2 mt-4 text-lg font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-colors"
             >
               Get Started

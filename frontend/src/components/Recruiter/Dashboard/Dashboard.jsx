@@ -5,7 +5,6 @@ import ApplicantList from "./ApplicantList";
 const Dashboard = () => {
   return (
     <div>
-      <hr className="mb-16 text-gray-300 " />
       <HiringOverview />
       <hr className="my-12 text-gray-300 " />
       <RecentJobPostings />

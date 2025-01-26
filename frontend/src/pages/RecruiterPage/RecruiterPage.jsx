@@ -5,11 +5,10 @@ import Footer from "../../components/Others/Footer";
 import Dashboard from "../../components/Recruiter/Dashboard/Dashboard";
 import TopColleges from "../../components/Recruiter/Colleges/TopColleges";
 import { FaChartPie } from "react-icons/fa";
-
-// import CompanyProfile from "../components/CompanyProfile";
-// import JobPosting from "../components/JobPosting";
-// import Applicants from "../components/Applicants";
-// import HiringWorkflow from "../components/HiringWorkflow";
+import CompanyProfile from "../../components/Recruiter/CompanyProfile/CompanyProfile";
+import JobPosting from "../../components/Recruiter/JobPosting/JobPosting";
+import ApplicantList from "../../components/Recruiter/Applicants/ApplicantList";
+import Rounds from "../../components/Recruiter/Rounds/Rounds";
 
 const RecruiterPage = () => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -42,13 +41,15 @@ const RecruiterPage = () => {
 
             <FaChartPie className="text-slate-700 text-6xl" />
           </div>
+          <hr className="mb-16 text-gray-300 " />
+
           {/* Conditional rendering based on the selected component */}
           {selectedComponent === "Dashboard" && <Dashboard />}
-          {/* {selectedComponent === "CompanyProfile" && <CompanyProfile />}
+          {selectedComponent === "CompanyProfile" && <CompanyProfile />}
           {selectedComponent === "JobPostings" && <JobPosting />}
-          {selectedComponent === "Applicants" && <Applicants />} */}
+          {selectedComponent === "Applicants" && <ApplicantList />}
           {selectedComponent === "Colleges" && <TopColleges />}
-          {/* {selectedComponent === "HiringWorkflow" && <HiringWorkflow />} */}
+          {selectedComponent === "HiringWorkflow" && <Rounds />}
           <Footer />
         </div>
       </div>
