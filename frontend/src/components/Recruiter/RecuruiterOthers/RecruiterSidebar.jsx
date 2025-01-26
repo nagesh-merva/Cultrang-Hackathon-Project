@@ -45,8 +45,10 @@ const Sidebar = ({ sidebarVisible, onLinkClick }) => {
     >
       <div className="p-6">
         <div className="flex items-center mb-6 mt-7">
-          <img src="#" alt="Company Logo" className="h-10 w-10 mr-4" />
-          <h2 className="text-2xl text-slate-600 font-bold">{companyName}</h2>
+          <FaBuilding className="text-gray-400 text-4xl" />
+          <h2 className="text-xl text-slate-600 font-extrabold">
+            {companyName}
+          </h2>
         </div>
 
         <nav>

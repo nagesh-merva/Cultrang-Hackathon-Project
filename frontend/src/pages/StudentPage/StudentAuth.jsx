@@ -8,6 +8,7 @@ const StudentAuth = () => {
   const toggleAuthView = () => {
     setIsLogin(!isLogin); // Toggle between login and signup views
   };
+  console.log(isLogin)
 
   return (
     <div>
@@ -15,7 +16,7 @@ const StudentAuth = () => {
       {isLogin ? (
         <Login toggleAuthView={toggleAuthView} />
       ) : (
-        <Signup />
+        <Signup toggleAuthView={toggleAuthView} />
       )}
     </div>
   );

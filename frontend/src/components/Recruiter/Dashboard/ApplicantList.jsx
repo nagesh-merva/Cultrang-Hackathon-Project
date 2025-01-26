@@ -29,6 +29,7 @@ const ApplicantList = () => {
             name:
               applicant.form.find((field) => field.field_name === "Full Name")
                 ?.value || "N/A",
+            stsname: applicant.student_name,
             college: applicant.college_name || "N/A",
             appliedDate: new Date(applicant.submitted_at).toLocaleDateString(),
             status: applicant.status || "N/A",
@@ -68,7 +69,7 @@ const ApplicantList = () => {
             <tbody>
               {applicants.map((applicant, index) => (
                 <tr className="border-b border-gray-200" key={index}>
-                  <td className="py-3">{applicant.name}</td>
+                  <td className="py-3">{applicant.stsname}</td>
                   <td className="py-3">{applicant.college}</td>
                   <td className="py-3">{applicant.appliedDate}</td>
                   <td className="py-3 text-right">{applicant.status}</td>

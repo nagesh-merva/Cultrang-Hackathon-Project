@@ -1,15 +1,12 @@
 import React from "react";
+import { FaBuilding } from "react-icons/fa";
 
 export default function JobPostCard({ job }) {
   return (
     <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200 my-4 max-w-xl mx-auto">
       <div className="flex items-center mb-2">
         {/* Display company logo if available */}
-        <img
-          src={job.companyLogo || ""} // Placeholder logo if no logo is provided
-          alt="Logo"
-          className="w-12 h-12 mr-4"
-        />
+        <FaBuilding className="text-blue-500 text-4xl" />
         <h1 className="text-lg font-semibold text-gray-800">{job.company}</h1>
       </div>
       <h3 className="text-md font-medium text-gray-800 mt-2">{job.title}</h3>

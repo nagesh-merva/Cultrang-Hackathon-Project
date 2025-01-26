@@ -23,10 +23,11 @@ const ApplicantList = () => {
 
         const formattedData = response.data.map((application) => {
           const formFields = {};
+          const studentname = application.student_name;
           const jobPosition = application.job_position;
           const collegeName = application.college_name;
-          const studentName = application.student_name;
-
+          const id = application.id;
+          const Status = application.status;
           console.log(response.data);
           console.log(jobPosition);
 
@@ -38,8 +39,9 @@ const ApplicantList = () => {
             jobPosition,
             collegeName,
             formFields,
-            studentName,
-            id: application.id,
+            id: id,
+            status: Status,
+            name: studentname,
           };
         });
 

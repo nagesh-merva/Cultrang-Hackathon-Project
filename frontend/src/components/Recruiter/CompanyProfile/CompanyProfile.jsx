@@ -53,7 +53,8 @@ const ProfilePage = () => {
   };
 
   // Handle save changes (PUT request)
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = async (e) => {
+    e.preventDefault()
     try {
       const company_id = sessionStorage.getItem("company_id");
       if (!company_id) {
@@ -107,7 +108,7 @@ const ProfilePage = () => {
       <div className="bg-gray-50 flex min-h-screen">
         <div className="flex-1 max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
           {/* Section for Logo Image and Company Name */}
-          <div className="flex flex-col items-center justify-center mt-16">
+          <form onSubmit={handleSaveChanges} className="flex flex-col items-center justify-center mt-16">
             <input
               type="file"
               className="hidden"
@@ -147,13 +148,13 @@ const ProfilePage = () => {
 
             {isEditing && (
               <button
-                onClick={handleSaveChanges}
+                type="submit"
                 className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
               >
                 Save Changes
               </button>
             )}
-          </div>
+          </form>
 
           {/* Section for Cards */}
           <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8 gap-6">

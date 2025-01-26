@@ -1,25 +1,34 @@
-import React, { useState } from 'react';
-import { FaPen, FaSave } from 'react-icons/fa'; // Import the pen and save icons
-import { FiFileText } from 'react-icons/fi'; // Icon for file
+import React, { useState } from "react"
+import { FaPen, FaTimes, FaSave } from "react-icons/fa"
+import { FiFileText } from "react-icons/fi"
+import axios from "axios";
+import Select from 'react-select'
+
+const collegeOptions = [
+  { value: 'Harvard University', label: 'Harvard University' },
+  { value: 'Stanford University', label: 'Stanford University' },
+  { value: 'MIT', label: 'MIT' },
+  { value: 'GEC', label: 'Goa College of Engineering' },
+  { value: 'California Institute of Technology', label: 'California Institute of Technology' },
+]
 
 const ProfileManage = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const student = JSON.parse(sessionStorage.getItem("student"))
   const [profile, setProfile] = useState({
-    name: 'John Doe',
-    skills: 'React, Node.js, JavaScript',
-    college: 'XYZ University',
-    degree: 'B.Tech in Computer Science',
-    rollno: '12345678',
-    email: 'john.doe@example.com',
-    phone: '+1 123 456 7890',
-    profilePicture: '#', // Placeholder for profile picture URL
-    resume: '', // Placeholder for resume
-    resumeUrl: '', // To store the resume URL or file path
+    ...student,
+    profilePic: student.profilePic || "",
+    resume: student.resume || "",
+    skills: student.skills || []
   });
+  const [profilePicFile, setProfilePicFile] = useState(null)
+  const [resumeFile, setResumeFile] = useState(null)
+  const [newSkill, setNewSkill] = useState("")
 
-  const toggleEdit = () => setIsEditing(!isEditing);
+  console.log(student)
 
-  // Handle input change
+  const toggleEdit = () => setIsEditing(!isEditing)
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile((prevProfile) => ({
@@ -28,38 +37,94 @@ const ProfileManage = () => {
     }));
   };
 
-  // Handle profile picture upload
+  const handleCollegeChange = (selectedOption) => {
+    setProfile((prevProfile) => ({
+      ...prevProfile,
+      college: selectedOption ? selectedOption.value : "",
+    }))
+  }
+
   const handleProfilePictureChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setProfilePicFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfile((prevProfile) => ({
           ...prevProfile,
-          profilePicture: reader.result,
-        }));
-      };
+          profilePic: reader.result,
+        }))
+      }
       reader.readAsDataURL(file);
     }
-  };
+  }
 
-  // Handle resume upload (no restrictions on file types)
   const handleResumeChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const fileUrl = URL.createObjectURL(file);
+      setResumeFile(file);
       setProfile((prevProfile) => ({
         ...prevProfile,
         resume: file.name,
-        resumeUrl: fileUrl, // Store file URL for preview
       }));
     }
   };
 
-  // Handle saving changes
-  const handleSaveChanges = (e) => {
+  const addSkill = () => {
+    if (newSkill.trim() && !profile.skills.includes(newSkill.trim())) {
+      setProfile((prevProfile) => ({
+        ...prevProfile,
+        skills: [...prevProfile.skills, newSkill.trim()],
+      }));
+      setNewSkill("")
+    }
+  }
+  const removeSkill = (skill) => {
+    setProfile((prevProfile) => ({
+      ...prevProfile,
+      skills: prevProfile.skills.filter((s) => s !== skill),
+    }));
+  };
+
+  // Save profile changes
+  const handleSaveChanges = async (e) => {
     e.preventDefault();
-    setIsEditing(false); // Save changes and exit edit mode
+    const formData = new FormData();
+
+    formData.append("id", student.id);
+    Object.keys(profile).forEach((key) => {
+      if (key !== "profilePic" && key !== "resume") {
+        if (key === "skills") {
+          formData.append(key, JSON.stringify(profile[key]))
+        } else {
+          formData.append(key, profile[key]);
+        }
+      }
+    });
+
+    if (profilePicFile) {
+      formData.append("profilePic", profilePicFile);
+    }
+    if (resumeFile) {
+      formData.append("resume", resumeFile);
+    }
+
+    try {
+      const response = await axios.put("http://127.0.0.1:5000/students/profile", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (response.data.success) {
+        alert("Profile updated successfully!");
+        sessionStorage.setItem("student", JSON.stringify(profile));
+        setIsEditing(false);
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("An error occurred while updating the profile.");
+    }
   };
 
   return (
@@ -68,11 +133,10 @@ const ProfileManage = () => {
         {/* Profile Picture */}
         <div className="flex justify-center mb-4 relative">
           <img
-            src={profile.profilePicture} // Use dynamic image URL
+            src={profile.profilePic}
             alt="Profile"
             className="w-32 h-32 rounded-full border-2 border-gray-300 object-cover shadow-md"
           />
-          {/* Pen Icon for Editing, visible only in Edit mode */}
           {isEditing && (
             <label className="absolute bottom-0 right-0 mb-2 mr-2 cursor-pointer">
               <input
@@ -86,15 +150,16 @@ const ProfileManage = () => {
           )}
         </div>
 
-        {/* Profile Info */}
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
-          {isEditing ? 'Edit Profile' : 'Profile Information'}
+          {isEditing ? "Edit Profile" : "Profile Information"}
         </h2>
 
         {isEditing ? (
           <form className="space-y-4" onSubmit={handleSaveChanges}>
             <div>
-              <label htmlFor="name" className="block text-gray-700">Name:</label>
+              <label htmlFor="name" className="block text-gray-700">
+                Name:
+              </label>
               <input
                 type="text"
                 id="name"
@@ -106,19 +171,31 @@ const ProfileManage = () => {
               />
             </div>
             <div>
-              <label htmlFor="skills" className="block text-gray-700">Skills:</label>
-              <input
-                type="text"
-                id="skills"
-                name="skills"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                placeholder="Enter your skills"
-                value={profile.skills}
-                onChange={handleChange}
-              />
+              <label htmlFor="skills" className="block text-gray-700">
+                Skills:
+              </label>
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  id="skills"
+                  className="flex-grow px-4 py-2 border border-gray-300 rounded-md"
+                  placeholder="Enter a skill and click Add"
+                  value={newSkill}
+                  onChange={(e) => setNewSkill(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="ml-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                  onClick={addSkill}
+                >
+                  Add
+                </button>
+              </div>
             </div>
             <div>
-              <label htmlFor="resume" className="block text-gray-700">Resume:</label>
+              <label htmlFor="resume" className="block text-gray-700">
+                Resume:
+              </label>
               <input
                 type="file"
                 id="resume"
@@ -128,19 +205,27 @@ const ProfileManage = () => {
               />
             </div>
             <div>
-              <label htmlFor="college" className="block text-gray-700">College:</label>
-              <input
-                type="text"
-                id="college"
-                name="college"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                placeholder="Enter your college name"
-                value={profile.college}
-                onChange={handleChange}
+              <label htmlFor="college" className="block text-gray-700">
+                College:
+              </label>
+              <Select
+                options={collegeOptions}
+                value={
+                  profile.college
+                    ? { value: profile.college, label: profile.college }
+                    : null // Show the selected college or null if none
+                }
+                onChange={handleCollegeChange}
+                placeholder="Search and select your college"
+                isClearable
+                className="w-full"
               />
             </div>
+
             <div>
-              <label htmlFor="degree" className="block text-gray-700">Degree:</label>
+              <label htmlFor="degree" className="block text-gray-700">
+                Degree:
+              </label>
               <input
                 type="text"
                 id="degree"
@@ -152,7 +237,9 @@ const ProfileManage = () => {
               />
             </div>
             <div>
-              <label htmlFor="rollno" className="block text-gray-700">Roll No:</label>
+              <label htmlFor="rollno" className="block text-gray-700">
+                Roll No:
+              </label>
               <input
                 type="text"
                 id="rollno"
@@ -164,7 +251,9 @@ const ProfileManage = () => {
               />
             </div>
             <div>
-              <label htmlFor="email" className="block text-gray-700">Email:</label>
+              <label htmlFor="email" className="block text-gray-700">
+                Email:
+              </label>
               <input
                 type="email"
                 id="email"
@@ -176,7 +265,9 @@ const ProfileManage = () => {
               />
             </div>
             <div>
-              <label htmlFor="phone" className="block text-gray-700">Phone Number:</label>
+              <label htmlFor="phone" className="block text-gray-700">
+                Phone Number:
+              </label>
               <input
                 type="text"
                 id="phone"
@@ -189,7 +280,7 @@ const ProfileManage = () => {
             </div>
             <button
               type="submit"
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md w-auto mx-auto flex items-center justify-center hover:bg-blue-700"
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md flex items-center justify-center hover:bg-blue-700"
             >
               <FaSave className="inline-block mr-2" /> Save Profile
             </button>
@@ -197,35 +288,48 @@ const ProfileManage = () => {
         ) : (
           <div className="space-y-4 bg-white p-4 rounded-md">
             <p className="text-gray-700 text-xl font-semibold">Name: {profile.name}</p>
-            <p className="text-gray-700 text-xl font-semibold">Skills: {profile.skills}</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {profile.skills && profile.skills.map((skill, index) => (
+                <span
+                  key={index}
+                  className="flex items-center bg-gray-200 px-3 py-1 rounded-full text-sm text-gray-700"
+                >
+                  {skill}
+                  <FaTimes
+                    className="ml-2 text-red-600 cursor-pointer"
+                    onClick={() => removeSkill(skill)}
+                  />
+                </span>
+              ))}
+            </div>
             <p className="text-gray-700 text-xl font-semibold">College: {profile.college}</p>
             <p className="text-gray-700 text-xl font-semibold">Degree: {profile.degree}</p>
             <p className="text-gray-700 text-xl font-semibold">Roll No: {profile.rollno}</p>
             <p className="text-gray-700 text-xl font-semibold">Email: {profile.email}</p>
             <p className="text-gray-700 text-xl font-semibold">Phone: {profile.phone}</p>
-
-            {/* Display Resume */}
             {profile.resume && (
               <div className="text-gray-700">
                 <p className="text-xl font-semibold">Resume: </p>
-                {profile.resumeUrl && profile.resumeUrl.endsWith('.pdf') ? (
-                  <a href={profile.resumeUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    View Resume (PDF)
+                {profile.resume.endsWith(".pdf") ? (
+                  <a
+                    href={`http://localhost:5000/uploads/resumes/${profile.resume}`}
+                    target="_blank"
+                    className="text-blue-500 flex items-center"
+                  >
+                    <FiFileText className="inline-block text-xl mr-2" /> View Resume
                   </a>
-                ) : (
-                  <div className="flex items-center">
-                    <FiFileText className="mr-2 text-gray-500" size={20} />
-                    {profile.resume}
-                  </div>
-                )}
+                ) : null}
               </div>
             )}
-            <button
-              onClick={toggleEdit}
-              className="text-center mt-4 px-4 py-2 bg-blue-500 text-white rounded-md w-auto mx-auto flex items-center justify-center hover:bg-blue-600 cursor-pointer">
-              <FaPen className="inline-block mr-2" /> Edit Profile
-            </button>
           </div>
+        )}
+        {!isEditing && (
+          <button
+            onClick={toggleEdit}
+            className="mt-6 w-full px-4 py-2 bg-green-600 text-white rounded-md flex items-center justify-center hover:bg-green-700"
+          >
+            <FaPen className="inline-block mr-2" /> Edit Profile
+          </button>
         )}
       </div>
     </div>
