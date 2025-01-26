@@ -227,13 +227,7 @@ def Collagessignup():
 
 # Collages Routes
 
-@app.route('/allcollages',methods=['GET'])
-def allCollages():
-    if request.method == 'GET':
-        allInstitute = list(db2.Collage_Admin.find({},{"_id":0}))
-        return jsonify(allInstitute),200
-    else:
-        return jsonify({"status":False,"message":"Method not allowed"}),404
+
 
 @app.route('/collages/<institute_id>', methods=['GET', 'PUT'])
 def manage_institute(institute_id):
@@ -492,8 +486,9 @@ def job_applications():
             return jsonify({"error": "An error occurred while processing the application."}), 500
 
     elif request.method == 'PUT':
-        data = request.form
+        data = request.json
         files = request.files 
+        print(data)
         
         application_id = data.get("id")
         if not application_id:
@@ -615,12 +610,14 @@ def recruitment_rounds():
             "description": data["description"],
             "type": data["type"],
             "status": data["status"],
+            "company_id":data["company_id"],
             "order_number": data["order_number"],
             "created_at": get_current_timestamp(),
             "updated_at": get_current_timestamp()
         }
         db.recruitment_rounds.insert_one(round_)
-        return jsonify({"message": "Recruitment round added successfully!"}), 201
+        rounds = db.recruitment_rounds.find({"company_id":data["company_id"]},{"_id":0})
+        return jsonify({"message": "Recruitment round added successfully!","rounds":db.re}), 201
     
     elif request.method == 'PUT':
         data = request.json

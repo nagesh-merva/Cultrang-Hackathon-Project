@@ -54,7 +54,7 @@ const LandingPage = () => {
               internship and job opportunities.
             </p>
             <a
-              href="#"
+              onClick={() => navigate("/college/auth")}
               className="inline-flex items-center px-8 py-2 mt-4 text-lg font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-colors"
             >
               Get Started
@@ -69,7 +69,7 @@ const LandingPage = () => {
               recruiters and organizations.
             </p>
             <a
-              href="#"
+              onClick={() => navigate("/student/auth")}
               className="inline-flex items-center px-8 py-2 mt-4 text-lg font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-colors"
             >
               Get Started
