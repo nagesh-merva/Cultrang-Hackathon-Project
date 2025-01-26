@@ -5,7 +5,7 @@ import Footer from "../../components/Others/Footer";
 import Dashboard from "../../components/Recruiter/Dashboard/Dashboard";
 import TopColleges from "../../components/Recruiter/Colleges/TopColleges";
 import { FaChartPie } from "react-icons/fa";
-import CompanyProfile from "../Recruiter/CompanyProfile";
+import CompanyProfile from "../../components/Recruiter/CompanyProfile/CompanyProfile";
 import JobPosting from "../../components/Recruiter/JobPosting/JobPosting";
 import ApplicantList from "../../components/Recruiter/Applicants/ApplicantList";
 import Rounds from "../../components/Recruiter/Rounds/Rounds";

@@ -6,7 +6,9 @@ from uuid import uuid4
 from datetime import datetime
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, allow_headers="*", origins="*", methods=["OPTIONS", "POST","GET","DELETE","PUT"])
+
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 client = MongoClient("mongodb+srv://NAGESH:Nagesh22%4025$@hackathon.zqqxl.mongodb.net/")
 db = client['recruitment_db'] 
@@ -106,8 +108,10 @@ def create_profile():
 
 @app.route("/recruiter/signup", methods=["POST"])
 def Recruitersignup():
-    data = request.form
+    data = request.json
     files = request.files 
+
+    print(data)
 
     if not data.get("company_name") or not data.get("password"):
         return jsonify({"success": False, "message": "Company name and password are required"}), 400
@@ -118,21 +122,21 @@ def Recruitersignup():
     if db.companies.find_one({"company_name": company_name}):
         return jsonify({"success": False, "message": "Company already exists"}), 409
 
-    if 'logo' in files:
-        logo_file = files['logo']
-        if logo_file:
-            logo_filename = f"uploads/logos/{generate_uuid()}_{logo_file.filename}"
-            os.makedirs(os.path.dirname(logo_filename), exist_ok=True) 
-            logo_file.save(logo_filename)  
+    # if 'logo' in files:
+    #     logo_file = files['logo']
+    #     if logo_file:
+    #         logo_filename = f"uploads/logos/{generate_uuid()}_{logo_file.filename}"
+    #         os.makedirs(os.path.dirname(logo_filename), exist_ok=True) 
+    #         logo_file.save(logo_filename)  
 
-    else:
-        return jsonify({"success": False, "message": "Logo file is required"}), 400
+    # else:
+    #     return jsonify({"success": False, "message": "Logo file is required"}), 400
 
     new_company = {
         "id": generate_uuid(),
         "company_name": company_name,
         "password": password,
-        "logo": logo_filename, 
+        "logo": "", 
         "description": data.get("description", ""),
         "website": data.get("website", ""),
         "industry": data.get("industry", ""),
@@ -252,13 +256,28 @@ def manage_institute(institute_id):
 
 # Company / Recruiters Route
 
+@app.route('/allcollages',methods=['GET'])
+def allCollages():
+    if request.method == 'GET':
+        allInstitute = list(db2.Collage_Admin.find({},{"_id":0}))
+        return jsonify(allInstitute),200
+    else:
+        return jsonify({"status":False,"message":"Method not allowed"}),404
+
 # Fetching and edting company details 
 @app.route('/company-details', methods=['GET', 'PUT'])
 def company_details():
     if request.method == 'GET':
-        companies = list(db.companies.find({}, {"_id": 0, "password": 0}))
-        return jsonify(companies), 200
-    
+        data = request.args
+        company_id = data.get("company_id")
+
+        if not company_id:
+            companies = list(db.companies.find({}, {"_id": 0, "password": 0}))
+            return jsonify(companies), 200
+        
+        companies = list(db.companies.find({"id": company_id}, {"_id": 0, "password": 0}))
+        return jsonify(companies[0]), 200
+
     elif request.method == 'PUT':
         data = request.form 
         files = request.files 
@@ -299,7 +318,7 @@ def company_details():
 @app.route('/job-posting', methods=['GET', 'POST','DELETE'])
 def job_posting():
     if request.method == 'GET':
-        data = request.json
+        data =request.args
         company_id = data["company_id"]
 
         if not company_id:
@@ -324,6 +343,7 @@ def job_posting():
             "selected_collages" : data["selected_collages"],
             "application_deadline": data["application_deadline"],
             "form" : data["form"],
+            "eligibility":[],
             "created_at": get_current_timestamp(),
             "updated_at": get_current_timestamp()
         }
@@ -347,7 +367,7 @@ def job_posting():
 @app.route('/job-applications', methods=['GET', 'POST', 'PUT'])
 def job_applications():
     if request.method == 'GET':
-        data = request.json
+        data = request.args
         company_id = data.get("company_id")
         
         if not company_id:

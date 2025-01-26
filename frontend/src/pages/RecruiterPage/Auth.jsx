@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import Signup from '../../components/Recruiter/Auth/Signup';
-import Login from '../../components/Recruiter/Auth/Login';
+import React, { useState } from "react";
+import Signup from "../../components/Recruiter/Auth/Signup";
+import Login from "../../components/Recruiter/Auth/Login";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true); // State to toggle between Login and Signup
@@ -15,7 +15,7 @@ const Auth = () => {
       {isLogin ? (
         <Login toggleAuthView={toggleAuthView} />
       ) : (
-        <Signup/>
+        <Signup toggleAuthView={toggleAuthView} />
       )}
     </div>
   );

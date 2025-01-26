@@ -7,38 +7,74 @@ export default function JobForm({ onSubmit }) {
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [requirements, setRequirements] = useState([""]);
-  const [applicationFields, setApplicationFields] = useState([
+  const [form, setApplicationFields] = useState([
     { id: "1", label: "", type: "text", required: true },
   ]);
-  const [colleges, setColleges] = useState([]);
+
+  const [selected_collages, setColleges] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [deadline, setDeadline] = useState(""); // New state for deadline
-  const [jobType, setJobType] = useState(""); // New state for job type
+  const [application_deadline, setDeadline] = useState(""); // New state for deadline
+  const [job_type, setJobType] = useState(""); // New state for job type
   const dropdownRef = useRef(null);
 
-  const handleSubmit = (e) => {
+  const removeRequirement = (index) => {
+    setRequirements(requirements.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit({
+
+    // Fetch company_id from session storage
+    const companyId = sessionStorage.getItem("company_id");
+
+    if (!companyId) {
+      alert("Company ID is missing in session storage.");
+      return;
+    }
+
+    // Prepare job data
+    const jobData = {
       title,
       company,
       location,
       description,
       requirements: requirements.filter((req) => req.trim() !== ""),
-      applicationFields: applicationFields.filter(
-        (field) => field.label.trim() !== ""
-      ),
-      colleges,
-      deadline, // Add deadline
-      jobType, // Add jobType
+      form: form.filter((form) => form.label.trim() !== ""),
+      selected_collages,
+      application_deadline, // Add deadline
+      job_type,
       status: "open",
-    });
+      company_id: companyId, // Send company_id from session storage
+    };
+    console.log(jobData);
+    // Send POST request
+    try {
+      const response = await fetch("http://localhost:5000/job-posting", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(jobData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Job posted successfully!");
+        onSubmit(); // You can trigger any callback or reset the form here
+      } else {
+        alert(`Error: ${result.message || "Something went wrong"}`);
+      }
+    } catch (error) {
+      alert("Error posting job: " + error.message);
+    }
   };
 
   const toggleCollegeSelection = (college) => {
-    if (colleges.includes(college)) {
-      setColleges(colleges.filter((c) => c !== college));
+    if (selected_collages.includes(college)) {
+      setColleges(selected_collages.filter((c) => c !== college));
     } else {
-      setColleges([...colleges, college]);
+      setColleges([...selected_collages, college]); // Add selected college
     }
   };
 
@@ -95,7 +131,7 @@ export default function JobForm({ onSubmit }) {
           Job Type
         </label>
         <select
-          value={jobType}
+          value={job_type}
           onChange={(e) => setJobType(e.target.value)}
           className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
         >
@@ -174,23 +210,23 @@ export default function JobForm({ onSubmit }) {
         <label className="block text-sm font-medium text-gray-700">
           Application Fields
         </label>
-        {applicationFields.map((field, index) => (
+        {form.map((field, index) => (
           <div key={field.id} className="flex mt-2 items-center space-x-2">
             <input
               type="text"
               placeholder="Field Label"
-              value={field.label}
+              value={form.label} // Corrected from form.label
               onChange={(e) => {
-                const newFields = [...applicationFields];
+                const newFields = [...form];
                 newFields[index].label = e.target.value;
                 setApplicationFields(newFields);
               }}
-              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
             />
+
             <select
-              value={field.type}
+              value={form.type}
               onChange={(e) => {
-                const newFields = [...applicationFields];
+                const newFields = [...form];
                 newFields[index].type = e.target.value;
                 setApplicationFields(newFields);
               }}
@@ -204,9 +240,7 @@ export default function JobForm({ onSubmit }) {
             <button
               type="button"
               onClick={() =>
-                setApplicationFields(
-                  applicationFields.filter((_, i) => i !== index)
-                )
+                setApplicationFields(form.filter((_, i) => i !== index))
               }
               className="text-red-600"
             >
@@ -218,7 +252,8 @@ export default function JobForm({ onSubmit }) {
           type="button"
           onClick={() =>
             setApplicationFields([
-              ...applicationFields,
+              // Add new application field logic
+              ...form,
               {
                 id: Date.now().toString(),
                 label: "",
@@ -238,45 +273,28 @@ export default function JobForm({ onSubmit }) {
         <label className="block text-sm font-medium text-gray-700">
           College
         </label>
-        <div className="relative" ref={dropdownRef}>
-          <button
-            type="button"
+        <div className="relative">
+          <input
+            type="text"
+            value={selected_collages.join(", ")}
             onClick={() => setShowDropdown(!showDropdown)}
-            className="w-full mt-2 bg-white border border-gray-300 rounded-md shadow-sm p-2 text-left focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            {colleges.length > 0
-              ? `Selected: ${colleges.join(", ")}`
-              : "Select Colleges"}
-          </button>
-
+            readOnly
+            className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+          />
           {showDropdown && (
-            <div className="absolute z-10 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg p-4">
-              <div className="space-y-2">
-                {["GEC", "IIT", "NIT", "PCCE"].map((college) => (
-                  <div key={college} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id={college}
-                      checked={colleges.includes(college)}
-                      onChange={() => toggleCollegeSelection(college)}
-                      className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <label
-                      htmlFor={college}
-                      className="ml-2 text-sm text-gray-700"
-                    >
-                      {college}
-                    </label>
-                  </div>
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowDropdown(false)}
-                className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
-              >
-                Done
-              </button>
+            <div
+              ref={dropdownRef}
+              className="absolute z-10 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg"
+            >
+              {["GEC", "PCCE", "DBCE"].map((college) => (
+                <div
+                  key={college}
+                  onClick={() => toggleCollegeSelection(college)}
+                  className="cursor-pointer p-2 hover:bg-gray-100"
+                >
+                  {college}
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -289,18 +307,22 @@ export default function JobForm({ onSubmit }) {
         </label>
         <input
           type="date"
-          value={deadline}
+          value={application_deadline}
           onChange={(e) => setDeadline(e.target.value)}
           className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+          required
         />
       </div>
 
-      <button
-        type="submit"
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-      >
-        Create Job Posting
-      </button>
+      {/* Submit */}
+      <div className="flex justify-center mt-6">
+        <button
+          type="submit"
+          className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
+        >
+          Submit
+        </button>
+      </div>
     </form>
   );
 }
