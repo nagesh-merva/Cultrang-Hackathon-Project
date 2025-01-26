@@ -1,12 +1,13 @@
 import os
-from flask import Flask, jsonify, request
+from flask import Flask, json, jsonify, request
 from flask_cors import CORS
 from pymongo import MongoClient
 from uuid import uuid4
 from datetime import datetime
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, allow_headers="*", origins="*", methods=["OPTIONS", "POST","GET","DELETE","PUT"])
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 client = MongoClient("mongodb+srv://NAGESH:Nagesh22%4025$@hackathon.zqqxl.mongodb.net/")
 db = client['recruitment_db'] 
@@ -24,7 +25,7 @@ def signup():
     data = request.json
 
     if db3.students.find_one({"email": data['email']}):
-        return jsonify({"success": False, "message": "Student already exists"}), 409
+        return jsonify({"success": False, "error": "Student already exists"}), 200
     
     student = {
         "id":generate_uuid(),
@@ -35,7 +36,7 @@ def signup():
         "degree": "",
         "rollno": data['rollno'],
         "email": data['email'],
-        "phone": None,
+        "phone": "",
         "profilePic": None,
         "password": data['password'],
         "created_at": get_current_timestamp(),
@@ -55,12 +56,12 @@ def login():
     if not all([email, password]):
         return jsonify({"success": False, "message": "Email and password are required"}), 400
 
-    student = db3.students.find_one({"email": email})
+    student = db3.students.find_one({"email": email},{"_id":0})
 
     if not student or student['password'] != password:
         return jsonify({"success": False, "message": "Invalid email or password"}), 401
 
-    return jsonify({"success": True, "message": "Login successful"}), 200
+    return jsonify({"success": True, "message": "Login successful","student":student}), 200
 
 # Student profile updates
 @app.route('/students/profile', methods=['PUT'])
@@ -80,6 +81,9 @@ def create_profile():
     update_fields = {key: value for key, value in data.items() if value is not None}
     update_fields["updated_at"] = get_current_timestamp()
     updated_data.update(update_fields)
+    
+    if 'skills' in data:
+        updated_data['skills'] = json.loads(data['skills'])
 
     if 'resume' in files:
         resume_file = files['resume']
@@ -215,11 +219,19 @@ def Collagessignup():
 
 # Collages Routes
 
+@app.route('/allcollages',methods=['GET'])
+def allCollages():
+    if request.method == 'GET':
+        allInstitute = list(db2.Collage_Admin.find({},{"_id":0}))
+        return jsonify(allInstitute),200
+    else:
+        return jsonify({"status":False,"message":"Method not allowed"}),404
+
 @app.route('/collages/<institute_id>', methods=['GET', 'PUT'])
 def manage_institute(institute_id):
     if request.method == 'GET':
         institute = db2.Collage_Admin.find_one({"id": institute_id}, {"_id": 0})
-
+    
         if not institute:
             return jsonify({"error": "Institute not found"}), 404
 
@@ -262,14 +274,15 @@ def company_details():
         company_id = data.get("company_id")
 
         if not company_id:
-            return jsonify({"error": "Missing company_id in headers"}), 400
+            companies = list(db.companies.find({}, {"_id": 0, "password": 0}))
+            return jsonify(companies), 200
         
         companies = list(db.companies.find({"id": company_id}, {"_id": 0, "password": 0}))
-        return jsonify(companies), 200
+        return jsonify(companies[0]), 200
     
     elif request.method == 'PUT':
         data = request.form 
-        files = request.files 
+        files = request.files
         
         if not data.get("company_id"):
             return jsonify({"success": False, "message": "Company ID is required"}), 400
@@ -395,10 +408,15 @@ def job_applications():
     if request.method == 'GET':
         data = request.args
         company_id = data.get("company_id")
+        student_name = data.get("student_name")
         
         if not company_id:
-            return jsonify({"error": "Missing company_id in headers"}), 400
-        
+            if not student_name:
+                return jsonify({"error": "Missing id in headers"}), 400
+            else:
+                applications = list(db.applications.find({"student_name": student_name}, {"_id": 0}))
+                return jsonify(applications), 200
+            
         applications = list(db.applications.find({"company_id": company_id}, {"_id": 0}))
         if not applications:
             return jsonify({"message": "No Applications found for the specified company_id"}), 404
@@ -406,35 +424,55 @@ def job_applications():
         return jsonify(applications), 200
 
     elif request.method == 'POST':
-        data = request.form
-        files = request.files 
-        
-        application = {
-            "id": generate_uuid(),
-            "job_id": data["job_id"],
-            "company": data["company"],
-            "job_position":data["job_position"],
-            "student_name": data["student_name"],
-            "college_name": data["college_name"],
-            "status": data["status"],
-            "form": data["form"],
-            "submitted_at": get_current_timestamp(),
-            "updated_at": get_current_timestamp()
-        }
+        try:
+            # Parse form data
+            data = request.form
+            files = request.files
+            
+            # Validate 'form' key
+            if 'form' not in data:
+                return jsonify({"error": "'form' field is missing from the request"}), 400
 
-        file_paths = {}
-        for fieldname, file in files.items():
-            if file:
-                file_path = f"uploads/applications/{generate_uuid()}_{file.filename}"
-                os.makedirs(os.path.dirname(file_path), exist_ok=True)
-                file.save(file_path)
-                file_paths[fieldname] = file_path
-        
-        if file_paths:
-            application["form"]["files"] = file_paths
+            # Parse JSON 'form' field
+            form = json.loads(data['form'])
 
-        db.applications.insert_one(application)
-        return jsonify({"message": "Application submitted successfully!"}), 201
+            application = {
+                "id": generate_uuid(),
+                "job_id": data.get('job_id'),
+                "company": data.get('company'),
+                "company_id": data.get('company_id'),
+                "job_position": data.get('job_position'),
+                "student_name": data.get('student_name'),
+                "college_name": data.get('college_name'),
+                "status": data.get('status'),
+                "form": form,
+                "submitted_at": get_current_timestamp(),
+                "updated_at": get_current_timestamp()
+            }
+
+            # Save files
+            file_paths = {}
+            for fieldname, file in files.items():
+                if file:
+                    filename =file.filename
+                    file_path = os.path.join("uploads/applications", f"{generate_uuid()}_{filename}")
+                    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                    file.save(file_path)
+                    file_paths[fieldname] = file_path
+
+            # Attach file paths to the form if files were uploaded
+            if file_paths:
+                for field in application["form"]:
+                    if field["field_name"] in file_paths:
+                        field["file_path"] = file_paths[field["field_name"]]
+
+            # Save application to database
+            db.applications.insert_one(application)
+            return jsonify({"message": "Application submitted successfully!"}), 201
+
+        except Exception as e:
+            print(f"Error: {e}")
+            return jsonify({"error": "An error occurred while processing the application."}), 500
 
     elif request.method == 'PUT':
         data = request.form

@@ -5,6 +5,7 @@ import Dashboard from "../../components/CollegeAdmin/AdminPage/Dashboard";
 import Company from "../../components/CollegeAdmin/AdminPage/Company";
 import RegStud from "../../components/CollegeAdmin/AdminPage/RegStud";
 import PlacedStud from "../../components/CollegeAdmin/AdminPage/PlacedStud";
+import CollegeProfilePage from "./CollegeProfilePage";
 
 const AdminPage = () => {
   const storedActiveLink = sessionStorage.getItem("activeLink") || "Dashboard"
@@ -23,6 +24,8 @@ const AdminPage = () => {
     ComponentToRender = RegStud;
   } else if (selectedComponent === "Placed Students") {
     ComponentToRender = PlacedStud;
+  } else if (selectedComponent === "College Profile") {
+    ComponentToRender = CollegeProfilePage;
   }
 
   return (

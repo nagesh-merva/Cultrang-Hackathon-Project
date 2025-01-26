@@ -87,7 +87,7 @@ const Dashboard = () => {
   }
 
   const filterAndSetPlacements = (apps) => {
-    const placedApplications = apps.filter((app) => app.status === "placed")
+    const placedApplications = apps.filter((app) => app.status === "Placed")
     setPlacements(placedApplications);
   }
 

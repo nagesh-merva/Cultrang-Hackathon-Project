@@ -1,10 +1,40 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios';
+
 
 const Login = ({ toggleAuthView }) => {
-  const handleLogin = (e) => {
-    e.preventDefault();
-    // handle login logic here
-  };
+  const navigate = useNavigate()
+
+  const handleLogin = async (e) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.target)
+    const email = formData.get('email')
+    const password = formData.get('password')
+
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/student/login', {
+        email: email,
+        password: password,
+      })
+
+      if (response.status === 200) {
+        const Response = response.data
+        console.log(Response)
+        sessionStorage.setItem('student', JSON.stringify(Response.student))
+        // console.log(sessionStorage.getItem('student'))
+        alert('Login successful!')
+        navigate('/student/dashboard')
+      }
+    } catch (error) {
+      if (error.response) {
+        alert(error.response.data.error)
+      } else {
+        alert('An error occurred. Please try again.')
+      }
+    }
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white px-4 sm:px-0">

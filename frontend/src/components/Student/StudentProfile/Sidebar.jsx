@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
 import { FaHome, FaUser, FaBriefcase, FaSignOutAlt, FaClipboardList, FaBars } from 'react-icons/fa';
-
+import { useNavigate } from 'react-router-dom'
 const Sidebar = ({ setActiveSection }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(true)
+  const navigate = useNavigate()
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
+
+  const logout = () => {
+    console.log("logged out")
+    sessionStorage.setItem("student", null)
+    navigate('/student/auth')
+  }
 
   return (
     <div>
@@ -64,7 +71,7 @@ const Sidebar = ({ setActiveSection }) => {
 
           {/* Logout Button */}
           <div className="absolute bottom-4 w-40 p-2 text-center">
-            <button className="cursor-pointer flex items-center space-x-2 py-2 px-3 rounded hover:bg-gray-700 w-full justify-start">
+            <button onClick={logout} className="cursor-pointer flex items-center space-x-2 py-2 px-3 rounded hover:bg-gray-700 w-full justify-start">
               <FaSignOutAlt className="h-5 w-5" />
               <span>Logout</span>
             </button>
