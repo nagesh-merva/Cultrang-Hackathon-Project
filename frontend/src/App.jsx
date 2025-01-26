@@ -3,8 +3,6 @@ import { Routes, Route } from "react-router-dom"
 import LandingPage from "./pages/OtherPages/LandingPage";
 import Auth from "./pages/Recruiter/Auth";
 import RecruiterPage from "./pages/RecruiterPage/RecruiterPage";
-import AdminAuth from "./pages/CollegeAdminPage/Auth";
-import AdminPage from "./pages/CollegeAdminPage/AdminPage";
 
 const App = () => {
   return <div>
