@@ -1,7 +1,7 @@
 import React from "react";
 
 const ApplicantCard = ({ form }) => {
-  const { jobPosition, collegeName, formFields } = form;
+  const { jobPosition, collegeName, formFields, studentName } = form;
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden border-l-4 border-blue-500 flex flex-col min-w-96 mx-4">
@@ -13,6 +13,11 @@ const ApplicantCard = ({ form }) => {
         </h3>
 
         <ul className="space-y-3">
+          <li className="flex justify-between text-gray-700 text-lg">
+            <span className="font-medium text-gray-900">Name:</span>
+            <span className="text-black font-semibold">{studentName}</span>
+          </li>
+
           <li className="flex justify-between text-gray-700 text-lg">
             <span className="font-medium text-gray-900">Applied For:</span>
             <span className="text-blue-600 font-semibold">{jobPosition}</span>

@@ -71,8 +71,8 @@ const ProfilePage = () => {
 
       // If there's a logo, append it as well
       if (logo) {
-        const logoFile = logo; // Assuming logo is a file or base64 string
-        formData.append("logo", logoFile); // If the logo is a file, append it here
+        const logoFile = logo;
+        formData.append("logo", logoFile);
       }
 
       // Send PUT request with form data

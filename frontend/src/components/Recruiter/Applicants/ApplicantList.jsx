@@ -25,6 +25,8 @@ const ApplicantList = () => {
           const formFields = {};
           const jobPosition = application.job_position;
           const collegeName = application.college_name;
+          const studentName = application.student_name;
+
           console.log(response.data);
           console.log(jobPosition);
 
@@ -36,7 +38,8 @@ const ApplicantList = () => {
             jobPosition,
             collegeName,
             formFields,
-            id: application.id, // Assuming 'id' exists in the response
+            studentName,
+            id: application.id,
           };
         });
 
