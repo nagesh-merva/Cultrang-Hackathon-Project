@@ -10,7 +10,7 @@ const LandingPage = () => {
       {/* Header Section */}
       <div className="bg-blue-700 text-white py-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-3">
-          <h1 className="text-3xl font-bold tracking-wide">InternSpirit</h1>
+          <h1 className="text-3xl font-bold tracking-wide">RecruitEase</h1>
         </div>
       </div>
 
