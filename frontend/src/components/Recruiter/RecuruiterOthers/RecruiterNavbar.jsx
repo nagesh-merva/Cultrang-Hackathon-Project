@@ -17,7 +17,7 @@ const Navbar = ({ toggleSidebar }) => {
           {/* Logo */}
           <div className="flex items-center">
             <span className="text-lg font-bold hidden md:block md:text-4xl">
-              InternSpirit
+              RecruitEase
             </span>
           </div>
 

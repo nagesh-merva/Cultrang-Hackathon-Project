@@ -11,7 +11,7 @@ const Footer = () => {
     <footer className="bg-gray-800 text-white py-8 mt-10 w-full">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between">
         <div className="mb-6 sm:mb-0">
-          <h3 className="text-xl font-bold mb-4">InternSpirit</h3>
+          <h3 className="text-xl font-bold mb-4">RecruitEase</h3>
           <p className="text-gray-400 mb-4">
             Connecting top talent with leading organizations.
           </p>
