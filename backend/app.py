@@ -9,7 +9,8 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True, allow_headers="*", origins="*", methods=["OPTIONS", "POST","GET","DELETE","PUT"])
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-client = MongoClient("mongodb+srv://NAGESH:Nagesh22%4025$@hackathon.zqqxl.mongodb.net/")
+url = os.environ.get("MONGOURL")
+client = MongoClient(url)
 db = client['recruitment_db'] 
 db2 = client['Collage_db']
 db3 = client['students_db']
