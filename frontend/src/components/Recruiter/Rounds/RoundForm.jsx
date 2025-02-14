@@ -27,7 +27,7 @@ function RoundForm({ onCancel, onRoundAdded }) {
 
     // Fetch jobs from the API
     axios
-      .get("http://127.0.0.1:5000/job-posting", {
+      .get("https://cultrang-hackathon-project.onrender.com/job-posting", {
         params: { company_id: companyId },
       })
       .then((response) => {
@@ -51,7 +51,7 @@ function RoundForm({ onCancel, onRoundAdded }) {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:5000/recruitment-rounds",
+        "https://cultrang-hackathon-project.onrender.com/recruitment-rounds",
         {
           ...formData,
         },

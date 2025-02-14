@@ -20,7 +20,7 @@ const RegStud = () => {
 
     try {
       const response = await axios.get(
-        "http://127.0.0.1:5000/allstudents-details",
+        "https://cultrang-hackathon-project.onrender.com/allstudents-details",
         {
           params: { college_name: college },
           headers: {

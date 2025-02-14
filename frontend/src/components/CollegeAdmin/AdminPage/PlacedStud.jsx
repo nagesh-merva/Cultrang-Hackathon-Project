@@ -40,7 +40,7 @@ const PlacedStud = () => {
 
     try {
       const response = await axios.get(
-        "http://127.0.0.1:5000/student-job-posting/filter",
+        "https://cultrang-hackathon-project.onrender.com/student-job-posting/filter",
         {
           params: { college_name: college },
           headers: {

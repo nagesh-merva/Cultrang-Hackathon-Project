@@ -14,7 +14,7 @@ const Login = ({ toggleAuthView }) => {
     const password = formData.get('password')
 
     try {
-      const response = await axios.post('http://127.0.0.1:5000/student/login', {
+      const response = await axios.post('https://cultrang-hackathon-project.onrender.com/student/login', {
         email: email,
         password: password,
       })

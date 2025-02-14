@@ -19,7 +19,7 @@ const Dashboard = () => {
 
     try {
       const response = await axios.get(
-        "http://127.0.0.1:5000/job-applications",
+        "https://cultrang-hackathon-project.onrender.com/job-applications",
         {
           params: { student_name: student.name },
           headers: {
@@ -103,14 +103,13 @@ const Dashboard = () => {
                     {application.company}:
                   </p>
                   <p
-                    className={`text-lg font-semibold ${
-                      application.status === "Accepted" ||
-                      application.status == "placed"
+                    className={`text-lg font-semibold ${application.status === "Accepted" ||
+                        application.status == "placed"
                         ? "text-green-600"
                         : application.status === "Rejected"
-                        ? "text-red-600"
-                        : "text-yellow-600"
-                    }`}
+                          ? "text-red-600"
+                          : "text-yellow-600"
+                      }`}
                   >
                     {application.status}
                   </p>

@@ -20,7 +20,7 @@ const Company = () => {
 
     setLoadingJobPostings(true);
     try {
-      const response = await axios.get("http://127.0.0.1:5000/job-posting/filter", {
+      const response = await axios.get("https://cultrang-hackathon-project.onrender.com/job-posting/filter", {
         params: { college_name: college },
         headers: {
           "Content-Type": "application/json",
@@ -65,7 +65,7 @@ const Company = () => {
 
     try {
       const response = await axios.put(
-        "http://127.0.0.1:5000/job-posting",
+        "https://cultrang-hackathon-project.onrender.com/job-posting",
         {
           job_id: jobId,
           eligibility: updatedEligibility,

@@ -110,7 +110,7 @@ const ProfileManage = () => {
     }
 
     try {
-      const response = await axios.put("http://127.0.0.1:5000/students/profile", formData, {
+      const response = await axios.put("https://cultrang-hackathon-project.onrender.com/students/profile", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

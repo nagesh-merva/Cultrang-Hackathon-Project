@@ -21,7 +21,7 @@ function Rounds() {
 
       try {
         const response = await axios.get(
-          "http://127.0.0.1:5000/recruitment-rounds",
+          "https://cultrang-hackathon-project.onrender.com/recruitment-rounds",
           {
             params: { company_id: companyId },
           }
@@ -111,11 +111,10 @@ function Rounds() {
                 </div>
                 <div className="flex items-center space-x-4">
                   <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      round.status === "completed"
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${round.status === "completed"
                         ? "bg-green-100 text-green-800"
                         : "bg-gray-100 text-gray-800"
-                    }`}
+                      }`}
                   >
                     {round.status.charAt(0).toUpperCase() +
                       round.status.slice(1)}

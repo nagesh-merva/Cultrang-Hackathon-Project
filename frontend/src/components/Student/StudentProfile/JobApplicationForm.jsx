@@ -70,7 +70,7 @@ const JobApplicationForm = ({ job, onClose }) => {
         });
 
         try {
-            const response = await axios.post('http://127.0.0.1:5000/job-applications', formDataToSend, {
+            const response = await axios.post('https://cultrang-hackathon-project.onrender.com/job-applications', formDataToSend, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

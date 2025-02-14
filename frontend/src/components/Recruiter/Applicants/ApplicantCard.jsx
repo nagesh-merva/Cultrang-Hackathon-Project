@@ -10,7 +10,7 @@ const ApplicantCard = ({ form }) => {
     setLoading(true);
     try {
       const response = await axios.put(
-        "http://127.0.0.1:5000/job-applications",
+        "https://cultrang-hackathon-project.onrender.com/job-applications",
         {
           id: id,
           status: Status,
